@@ -157,7 +157,8 @@ def h_enum_options(v: ConfigView):
             if FORBIDDEN_ID_CHARS.search(i):
                 errs.append(f"enumeration {label}: option id '{i}' contains a forbidden character")
         defaults = [o["id"] for o in e["options"] if o.get("default")]
-        if len(defaults) > 1:
+        merged = any("getAllEnumOptionsForId" in (s.get("location") or "") for s in e.get("sources") or [])
+        if len(defaults) > 1 and not merged:      # a merged all-contexts listing has one default per context: not a defect
             errs.append(f"enumeration {label}: more than one default option ({', '.join(defaults)})")
         if not ids:
             warns.append(f"enumeration {label} has no options")

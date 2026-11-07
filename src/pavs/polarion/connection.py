@@ -266,7 +266,9 @@ class ConnectionManager:
             return ProviderState.DISABLED
         if resp.status_code == 401:
             state = ProviderState.AUTH_FAILED if plan.can_authenticate(ProviderKind.SVN) else ProviderState.AVAILABLE
-            detail = "credentials rejected" if state == ProviderState.AUTH_FAILED else plan.explain(ProviderKind.SVN)
+            detail = (("the repository (/repo) rejected this user name and password. On some servers the repository login is "
+                       "separate from the Polarion login: check by opening <server>/repo/ in a browser")
+                      if state == ProviderState.AUTH_FAILED else plan.explain(ProviderKind.SVN))
             profile.providers.append(ProviderStatus(kind=ProviderKind.SVN, state=state, detail=detail))
             return state
         if resp.status_code == 200:

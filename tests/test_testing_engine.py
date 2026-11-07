@@ -148,3 +148,32 @@ def test_custom_check_is_not_testable_and_crash_is_contained():
     assert ex.run(tc).status == S.NOT_TESTABLE
     bad = TestCase(requirement_id="r", title="x", check=CheckSpec(kind=CheckKind.ROLE_EXISTS, expect=Expectation.PRESENT, target={}))
     assert ex.run(bad).status in (S.ERROR, S.BLOCKED)
+
+
+def test_merged_soap_enum_listing_is_not_reported_as_duplicates():
+    """Tracker.getAllEnumOptionsForId returns the options of every Work Item type's variant of an enumeration, so ids repeat
+    and several defaults appear. That is the server's data, not a configuration defect (seen on a real 2606 project)."""
+    from pavs.domain.config import EnumOptionDef
+    from pavs.engines.inspection.enums import unique_options
+    from pavs.engines.testing.health import h_enum_options
+
+    opts = unique_options([EnumOptionDef(id=i, default=d) for i, d in
+                           [("done", True), ("valid", True), ("done", False), ("invalid", False), ("invalid", False)]])
+    assert [o.id for o in opts] == ["done", "valid", "invalid"]
+
+    class View:
+        def __init__(self, enums):
+            self._e = enums
+
+        def enumerations(self):
+            return self._e
+
+    merged = {"enum_id": "resolution", "target_type": None, "options": [{"id": "done", "default": True}, {"id": "valid", "default": True}],
+              "sources": [{"location": "Tracker.getAllEnumOptionsForId(resolution)"}]}
+    errs, _, _ = h_enum_options(View([merged]))
+    assert errs == []
+    from_file = dict(merged, sources=[{"location": "/.polarion/tracker/fields/resolution-enum.xml"}])
+    errs, _, _ = h_enum_options(View([from_file]))
+    assert any("more than one default" in e for e in errs)                      # a real file with two defaults is still flagged
+    dup = dict(from_file, options=[{"id": "a"}, {"id": "a"}])
+    assert any("more than once" in e for e in h_enum_options(View([dup]))[0])

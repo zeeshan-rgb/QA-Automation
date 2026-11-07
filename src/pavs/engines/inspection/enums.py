@@ -50,6 +50,18 @@ def rest_option(o: dict[str, Any]) -> EnumOptionDef:
                          extra={k: v for k, v in o.items() if k not in known})
 
 
+def unique_options(opts: list[EnumOptionDef]) -> list[EnumOptionDef]:
+    """getAllEnumOptionsForId lists the options of EVERY context of an enumeration (each Work Item type or document type
+    with its own variant), so the same option id comes back several times. Keep the first of each id."""
+    seen: set[str] = set()
+    out = []
+    for o in opts:
+        if o.id not in seen:
+            seen.add(o.id)
+            out.append(o)
+    return out
+
+
 def soap_option(o: Any) -> EnumOptionDef | None:
     if not isinstance(o, dict):
         return None
@@ -78,7 +90,7 @@ def read_enum(ctx: InspectionContext, col: Collector, enum_id: str, target_type:
             resp = col.attempt(f"SOAP getAllEnumOptionsForId({enum_id})", lambda: ctx.soap.call(
                 "Tracker", "getAllEnumOptionsForId", {"projectID": ctx.project_id, "enumID": enum_id}))
             if resp is not None:
-                opts = [o for o in (soap_option(x) for x in as_list(resp)) if o and o.id]
+                opts = unique_options([o for o in (soap_option(x) for x in as_list(resp)) if o and o.id])
                 col.used(ProviderKind.SOAP)
                 return opts, src_soap(f"Tracker.getAllEnumOptionsForId({enum_id})")
         elif provider == ProviderKind.SVN and ctx.repo is not None:
