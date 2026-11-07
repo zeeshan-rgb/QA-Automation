@@ -67,6 +67,7 @@ class Environment(BaseModel):
     # role id -> Polarion user name of a test account holding that role (its token lives in the vault)
     test_accounts: dict[str, str] = Field(default_factory=dict)
     notes: str = ""
+    local_repo_path: str | None = None   # Polarion on THIS computer: read the repository files directly (read-only)
     created_at: datetime = Field(default_factory=utcnow)
 
     @field_validator("base_url")

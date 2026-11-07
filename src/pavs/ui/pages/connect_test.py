@@ -98,6 +98,11 @@ class ConnectTestPage(QWidget):
         self.svn_password = QLineEdit()
         self.svn_password.setEchoMode(QLineEdit.Password)
         self.svn_password.setPlaceholderText("optional: repository password")
+        self.local_repo = QLineEdit()
+        self.local_repo.setPlaceholderText("optional: Polarion on this computer, its repository folder")
+        self.local_repo.setToolTip("Only for a Polarion server running on THIS computer. The configuration files are read straight "
+                                   "from its repository folder (read-only, no repository login). Leave empty to detect it automatically "
+                                   "when the server is localhost and /repo refuses the login.")
         self.kind = QComboBox()
         for k in EnvironmentKind:
             self.kind.addItem(k.value.capitalize(), k)
@@ -122,6 +127,7 @@ class ConnectTestPage(QWidget):
         form.addRow("Access token", self.token)
         form.addRow("Repository user", self.svn_user)
         form.addRow("Repository password", self.svn_password)
+        form.addRow("Local repository folder", self.local_repo)
         opts = QVBoxLayout()
         for c in (self.read_files, self.remember, self.verify):
             opts.addWidget(c)
@@ -335,6 +341,7 @@ class ConnectTestPage(QWidget):
         env = self.ctx.environments.get(env_id)
         self.url.setText(env.base_url)
         self.user.setText(env.username or "")
+        self.local_repo.setText(env.local_repo_path or "")
         self.verify.setChecked(env.tls.verify)
         self.kind.setCurrentIndex(max(0, self.kind.findData(env.kind)))
         stored = self.ctx.environments.has_credentials(env_id)
@@ -353,6 +360,7 @@ class ConnectTestPage(QWidget):
         url, user, pw, tok = self.url.text().strip(), self.user.text().strip(), self.password.text(), self.token.text().strip()
         env_id = self.saved.currentData()
         svn_user, svn_pw = self.svn_user.text().strip(), self.svn_password.text()
+        local_repo = self.local_repo.text().strip()
         if env_id:                                  # anything left blank is taken from the saved connection
             stored = self.ctx.environments.credentials(env_id)
             if stored:
@@ -380,7 +388,7 @@ class ConnectTestPage(QWidget):
 
         def work(progress):
             return self.ctx.connections.quick_connect(url, user, pw, tok, read_files, remember, verify, progress=progress, kind=kind,
-                                                 svn_user=svn_user, svn_password=svn_pw)
+                                                 svn_user=svn_user, svn_password=svn_pw, local_repo=local_repo)
 
         def done(out) -> None:
             self.env, self.profile = out.environment, out.profile

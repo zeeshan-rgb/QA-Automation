@@ -46,7 +46,7 @@ class ConnectionService:
                       read_config_files: bool = True, remember: bool = False, verify_tls: bool = True,
                       name: str = "", progress: Progress | None = None,
                       kind: EnvironmentKind = EnvironmentKind.DEVELOPMENT,
-                      svn_user: str = "", svn_password: str = "") -> ConnectOutcome:
+                      svn_user: str = "", svn_password: str = "", local_repo: str = "") -> ConnectOutcome:
         """The simple flow: URL + credentials -> connected, projects listed. Blocking (use a worker thread)."""
         username, token = username.strip(), token.strip()
         if not token and not (username and password):
@@ -54,13 +54,13 @@ class ConnectionService:
         method = (AuthMethod.TOKEN_AND_PASSWORD if token and password else
                   AuthMethod.TOKEN if token else AuthMethod.PASSWORD)
         providers = [ProviderKind.REST, ProviderKind.SOAP]
-        if read_config_files and (password or svn_password):
+        if read_config_files and (password or svn_password or local_repo.strip() or _local_url(url)):
             providers.append(ProviderKind.SVN)
         try:
             existing = self.environments.find_by_url(url)
             host = Environment(name="x", base_url=url).base_url.split("//", 1)[1].split("/", 1)[0]
             fields = dict(base_url=url, auth_method=method, username=username or None, providers_enabled=providers,
-                          tls=TlsSettings(verify=verify_tls), kind=kind)
+                          tls=TlsSettings(verify=verify_tls), kind=kind, local_repo_path=local_repo.strip() or None)
             env = existing.model_copy(update=fields) if existing else Environment(name=name or host, **fields)
             env = Environment.model_validate(env.model_dump())
         except (ValidationError, ValueError) as exc:
@@ -114,3 +114,8 @@ class ConnectionService:
         for s in self._sessions.values():
             s.close()
         self._sessions.clear()
+
+
+def _local_url(url: str) -> bool:
+    from urllib.parse import urlparse
+    return (urlparse(url).hostname or "").lower() in ("localhost", "127.0.0.1", "::1")

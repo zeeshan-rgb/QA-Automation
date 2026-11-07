@@ -26,6 +26,7 @@ from .rest.client import RestClient, is_jsonapi_response
 from .safety import WriteGuard
 from .soap.client import SoapClient
 from .svn.client import SvnConfigReader
+from .svn.local import LocalSvnReader, find_local_repository, find_svnlook, is_repository
 from .transport import ExchangeRecorder, HttpTransport
 from .version.detector import VersionDetector
 from .version.release import Release
@@ -253,6 +254,45 @@ class ConnectionManager:
         return ProviderState.AUTHENTICATED
 
     def _probe_svn(self, s: Session, plan: AuthPlan, profile: ServerProfile) -> ProviderState:
+        """Repository access: a configured local repository folder first; otherwise /repo over HTTP, and when that login is
+        refused on a Polarion that runs on this same computer, the local repository files (read-only, no login)."""
+        explicit = s.environment.local_repo_path
+        if explicit:
+            state = self._probe_local_svn(s, profile, explicit, "the configured local repository folder")
+            if state == ProviderState.AUTHENTICATED:
+                return state
+        state = self._probe_http_svn(s, plan, profile)
+        if state in (ProviderState.AUTH_FAILED, ProviderState.AVAILABLE) and _is_local_host(s.environment.base_url) and not explicit:
+            found = find_local_repository()
+            if found:
+                profile.providers = [p for p in profile.providers if p.kind != ProviderKind.SVN]
+                return self._probe_local_svn(s, profile, found, "the local repository folder (/repo refused the login)")
+        return state
+
+    def _probe_local_svn(self, s: Session, profile: ServerProfile, repo_path: str, why: str) -> ProviderState:
+        problem = None
+        svnlook = find_svnlook(repo_path)
+        if not is_repository(repo_path):
+            problem = f"'{repo_path}' is not a Subversion repository folder"
+        elif svnlook is None:
+            problem = "svnlook was not found (it ships with Polarion under bundled/svn/bin; or set PAVS_SVNLOOK)"
+        else:
+            reader = LocalSvnReader(repo_path, svnlook, s.environment.server_root)
+            try:
+                revision = reader.probe()
+            except PavsError as exc:
+                problem = str(exc)
+            else:
+                s.svn = reader
+                profile.providers = [p for p in profile.providers if p.kind != ProviderKind.SVN]
+                profile.providers.append(ProviderStatus(
+                    kind=ProviderKind.SVN, state=ProviderState.AUTHENTICATED,
+                    detail=f"read-only, from {why} {repo_path} (revision {revision}, svnlook); no repository login used"))
+                return ProviderState.AUTHENTICATED
+        profile.warnings.append(f"Local repository folder not used: {problem or 'unavailable'}")
+        return ProviderState.UNREACHABLE
+
+    def _probe_http_svn(self, s: Session, plan: AuthPlan, profile: ServerProfile) -> ProviderState:
         svn = SvnConfigReader(s.transport, s.environment.server_root, plan.svn_user, plan.svn_password)
         try:
             resp = svn.probe()
@@ -359,3 +399,9 @@ class ConnectionManager:
 
 def _join(*parts: str) -> str:
     return " | ".join(p for p in parts if p)
+
+
+def _is_local_host(base_url: str) -> bool:
+    from urllib.parse import urlparse
+    host = (urlparse(base_url).hostname or "").lower()
+    return host in ("localhost", "127.0.0.1", "::1")
