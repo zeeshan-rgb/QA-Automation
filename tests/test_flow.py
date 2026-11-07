@@ -107,7 +107,7 @@ def test_full_run_report_and_history(ctx, tmp_path):
     csv = ctx.testing.export(run.id, tmp_path / "report.csv").read_text(encoding="utf-8-sig")
     for text in (html, csv):
         assert "admin-test-pw" not in text and "test-token-admin" not in text
-    assert "FAIL" in html and "no ai was used" in html.lower()
+    assert "FAIL" in html and "executed check" in html.lower() and "no ai" not in html.lower()
     pdf = ctx.testing.export(run.id, tmp_path / "report.pdf")
     raw = pdf.read_bytes()
     assert raw.startswith(b"%PDF") and len(raw) > 2000

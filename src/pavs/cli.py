@@ -173,7 +173,7 @@ def cmd_merge_check(ctx: AppContext, args) -> int:
 
 # ------------------------------------------------------------------ parser
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="pavs-cli", description=f"{APP_NAME} {__version__}: headless test runs. No AI is used.",
+    p = argparse.ArgumentParser(prog="pavs-cli", description=f"{APP_NAME} {__version__}: headless test runs.",
                                 epilog="Secrets: set PAVS_USER / PAVS_PASSWORD / PAVS_TOKEN in the environment.")
     p.add_argument("--version", action="version", version=f"{APP_NAME} {__version__}")
     sub = p.add_subparsers(dest="command", required=True)
