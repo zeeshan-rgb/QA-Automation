@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLa
 
 from ...app import AppContext
 from ...domain.config import ConfigSnapshot, SectionResult
+from ...domain.errors import PavsError
 from ..theme import STATUS_COLORS
 from ..widgets import heading, item, make_table, pretty
 from ..workers import run_in_background
@@ -89,6 +90,9 @@ class InspectorPage(QWidget):
         self.history.currentIndexChanged.connect(self._load_selected_snapshot)
         self.btn_compare = QPushButton("Compare with previous")
         self.btn_compare.clicked.connect(self._compare)
+        self.btn_clear = QPushButton("Clear snapshots")
+        self.btn_clear.setToolTip("Delete the saved snapshots of this project (the Polarion configuration itself is not touched).")
+        self.btn_clear.clicked.connect(self._clear_snapshots)
 
         top = QHBoxLayout()
         for lbl, w in (("Environment", self.env_box), ("Project", self.project_box)):
@@ -100,6 +104,7 @@ class InspectorPage(QWidget):
         hist.addWidget(QLabel("Snapshot"))
         hist.addWidget(self.history, 1)
         hist.addWidget(self.btn_compare)
+        hist.addWidget(self.btn_clear)
 
         self.progress = QProgressBar()
         self.progress.setVisible(False)
@@ -188,6 +193,20 @@ class InspectorPage(QWidget):
 
     def _project(self) -> str:
         return (self.project_box.currentText() or "").strip()
+
+    def _clear_snapshots(self) -> None:
+        env_id, project = self.env_box.currentData(), self._project()
+        if not (env_id and project):
+            return
+        if QMessageBox.question(self, "Clear snapshots", f"Delete all saved snapshots of project {project}? This cannot be undone.") != QMessageBox.Yes:
+            return
+        try:
+            n = self.ctx.inspection.clear_snapshots(env_id, project)
+        except PavsError as exc:
+            QMessageBox.warning(self, "Snapshots", str(exc))
+            return
+        self._load_history()
+        self.status.setText(f"{n} snapshot(s) deleted.")
 
     def _load_history(self) -> None:
         env_id, project = self.env_box.currentData(), self._project()

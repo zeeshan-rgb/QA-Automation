@@ -332,6 +332,19 @@ class TestingService:
     def history(self, env_id: str | None = None, project_id: str | None = None) -> list[TestRunRecord]:
         return self.runs.list(env_id, project_id)
 
+    def delete_runs(self, run_ids: list[str]) -> int:
+        self._need(Action.MANAGE_HISTORY)
+        n = self.runs.delete(run_ids)
+        self.audit.record("history.delete", "ok", detail={"runs": n})
+        return n
+
+    def clear_history(self, env_id: str | None = None, project_id: str | None = None) -> int:
+        """Delete saved test runs for one environment/project, or all of them. Reports already exported are not touched."""
+        self._need(Action.MANAGE_HISTORY)
+        n = self.runs.clear(env_id, project_id)
+        self.audit.record("history.clear", "ok", environment_id=env_id, target=project_id, detail={"runs": n})
+        return n
+
     def get_run(self, run_id: str) -> TestRunRecord | None:
         return self.runs.get(run_id)
 

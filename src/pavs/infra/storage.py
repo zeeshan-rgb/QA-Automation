@@ -212,6 +212,19 @@ class SnapshotRepository:
         rows = self.db.query("SELECT data FROM config_snapshots WHERE id=?", (snap_id,))
         return ConfigSnapshot.model_validate_json(rows[0]["data"]) if rows else None
 
+    def clear(self, env_id: str | None = None, project_id: str | None = None) -> int:
+        sql, args, conds = "DELETE FROM config_snapshots", [], []
+        if env_id:
+            conds.append("environment_id=?")
+            args.append(env_id)
+        if project_id:
+            conds.append("project_id=?")
+            args.append(project_id)
+        if conds:
+            sql += " WHERE " + " AND ".join(conds)
+        with self.db.tx() as c:
+            return c.execute(sql, tuple(args)).rowcount
+
 
 class RequirementRepository:
     def __init__(self, db: Database) -> None:
@@ -309,6 +322,24 @@ class TestRunRepository:
         from ..domain.testing import TestRunRecord
         rows = self.db.query("SELECT data FROM test_runs WHERE id=?", (run_id,))
         return TestRunRecord.model_validate_json(rows[0]["data"]) if rows else None
+
+    def delete(self, run_ids: list[str]) -> int:
+        with self.db.tx() as c:
+            return sum(c.execute("DELETE FROM test_runs WHERE id=?", (i,)).rowcount for i in run_ids)
+
+    def clear(self, env_id: str | None = None, project_id: str | None = None) -> int:
+        """Delete stored test runs (everything, or one environment / project). Test-data cleanup records are not touched."""
+        sql, args, conds = "DELETE FROM test_runs", [], []
+        if env_id:
+            conds.append("environment_id=?")
+            args.append(env_id)
+        if project_id:
+            conds.append("project_id=?")
+            args.append(project_id)
+        if conds:
+            sql += " WHERE " + " AND ".join(conds)
+        with self.db.tx() as c:
+            return c.execute(sql, tuple(args)).rowcount
 
 
 class ArtifactRepository:

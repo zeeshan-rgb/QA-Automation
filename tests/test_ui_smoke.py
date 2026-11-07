@@ -216,3 +216,20 @@ def test_new_window_button_and_flag_start_a_separate_copy(qapp, tmp_path, monkey
     from pavs.__main__ import _parser
     assert _parser().parse_known_args(["--new"])[0].new is True and _parser().parse_known_args([])[0].new is False
     ctx.close()
+
+
+def test_history_tab_clear_buttons_update_the_list(qapp, tmp_path, mock_server):
+    from pavs.ui.main_window import MainWindow
+    _, wsgi = mock_server("2606")
+    ctx = build_context(db_path=tmp_path / "hc.sqlite3", vault_backend=MemoryBackend(), http_transport=wsgi, log_to_file=False)
+    out = ctx.connections.quick_connect("https://mock.test/polarion", "admin", "admin-test-pw", token="test-token-admin")
+    ctx.testing.run(out.environment.id, "acme_demo", health=True)
+    ctx.testing.run(out.environment.id, "acme_demo", health=True)
+    win = MainWindow(ctx)
+    page = win.connect_test
+    page._fill_history()
+    assert page.history.rowCount() == 2 and page.btn_clear.isEnabled() and page.btn_delete_run.text() == "Delete selected"
+    page._history_action(lambda: ctx.testing.clear_history())
+    assert page.history.rowCount() == 0 and "2 saved run" in page.counts.text()
+    assert win.inspector.btn_clear.text() == "Clear snapshots"
+    ctx.close()

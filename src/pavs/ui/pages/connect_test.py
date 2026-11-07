@@ -277,6 +277,11 @@ class ConnectTestPage(QWidget):
         self.history.itemSelectionChanged.connect(self._history_selected)
         self.btn_compare = QPushButton("Compare with previous run")
         self.btn_compare.clicked.connect(self._compare_runs)
+        self.btn_delete_run = QPushButton("Delete selected")
+        self.btn_delete_run.clicked.connect(self._delete_selected_runs)
+        self.btn_clear = QPushButton("Clear history...")
+        self.btn_clear.setToolTip("Delete saved test results. Exported reports, saved connections and test-data cleanup records are not touched.")
+        self.btn_clear.clicked.connect(self._clear_history)
 
         self.tabs = QTabWidget()
         self.tabs.setMinimumHeight(420)     # the page scrolls on short screens instead of squeezing the results
@@ -285,7 +290,12 @@ class ConnectTestPage(QWidget):
         self.tabs.addTab(self.gaps, "Could not be inspected")
         hist = QWidget()
         hl = QVBoxLayout(hist)
-        hl.addWidget(self.btn_compare, 0, Qt.AlignLeft)
+        bar = QHBoxLayout()
+        bar.addWidget(self.btn_compare)
+        bar.addWidget(self.btn_delete_run)
+        bar.addStretch(1)
+        bar.addWidget(self.btn_clear)
+        hl.addLayout(bar)
         hl.addWidget(self.history, 1)
         self.tabs.addTab(hist, "History")
 
@@ -785,6 +795,43 @@ class ConnectTestPage(QWidget):
                 if col == 3:
                     key = {"PASSED": "supported", "FAILED": "unsupported", "PASSED WITH GAPS": "partial"}.get(v)
                 self.history.setItem(i, col, item(v, key))
+
+    def _delete_selected_runs(self) -> None:
+        rows = sorted({i.row() for i in self.history.selectionModel().selectedRows()})
+        ids = [self._hist[r].id for r in rows if r < len(self._hist)]
+        if not ids:
+            QMessageBox.information(self, "History", "Select a run in the list first.")
+            return
+        if QMessageBox.question(self, "Delete selected", f"Delete {len(ids)} saved test run(s)? This cannot be undone.") != QMessageBox.Yes:
+            return
+        self._history_action(lambda: self.ctx.testing.delete_runs(ids))
+
+    def _clear_history(self) -> None:
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Clear history")
+        box.setText("Delete saved test results?")
+        box.setInformativeText("Exported reports, saved connections and the records used to clean up test data are not touched. "
+                               "This cannot be undone.")
+        mine = box.addButton("This connection only" if self.env else "Everything", QMessageBox.AcceptRole)
+        everything = box.addButton("Everything", QMessageBox.DestructiveRole) if self.env else None
+        box.addButton("Cancel", QMessageBox.RejectRole)
+        box.exec()
+        clicked = box.clickedButton()
+        if clicked is mine:
+            self._history_action(lambda: self.ctx.testing.clear_history(self.env.id if self.env else None))
+        elif everything is not None and clicked is everything:
+            self._history_action(lambda: self.ctx.testing.clear_history())
+
+    def _history_action(self, fn) -> None:
+        try:
+            n = fn()
+        except PavsError as exc:
+            QMessageBox.warning(self, "History", str(exc))
+            return
+        self.run_record = None
+        self._fill_history()
+        self.counts.setText(f"{n} saved run(s) deleted.")
 
     def _history_selected(self) -> None:
         rows = self.history.selectionModel().selectedRows()

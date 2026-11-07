@@ -43,6 +43,7 @@ class Action(str, Enum):
     RUN_TESTS = "connect to Polarion and run read-only tests"
     WRITE_TESTS = "run behavioural tests that create test data, or clean it up"
     APPROVE_WRITES = "approve test projects and test accounts"
+    MANAGE_HISTORY = "delete saved test results and snapshots"
     SVN_WRITE_TOOLS = "start a TortoiseSVN checkout, merge or commit"
     MANAGE_ENVIRONMENTS = "change production environments or delete environments"
     MANAGE_ROLES = "set the role passphrase"
@@ -54,6 +55,7 @@ MINIMUM = {
     Action.WRITE_TESTS: AppRole.LEAD,
     Action.APPROVE_WRITES: AppRole.LEAD,
     Action.SVN_WRITE_TOOLS: AppRole.LEAD,
+    Action.MANAGE_HISTORY: AppRole.LEAD,
     Action.MANAGE_ENVIRONMENTS: AppRole.ADMIN,
     Action.MANAGE_ROLES: AppRole.ADMIN,
 }

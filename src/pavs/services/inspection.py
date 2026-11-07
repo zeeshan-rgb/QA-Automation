@@ -92,6 +92,12 @@ class InspectionService:
     def history(self, env_id: str, project_id: str) -> list[tuple[int, str, str | None]]:
         return self.snapshots.list(env_id, project_id)
 
+    def clear_snapshots(self, env_id: str | None = None, project_id: str | None = None) -> int:
+        self.connections.environments._need(Action.MANAGE_HISTORY)
+        n = self.snapshots.clear(env_id, project_id)
+        self.audit.record("snapshots.clear", "ok", environment_id=env_id, target=project_id, detail={"snapshots": n})
+        return n
+
     def load(self, snap_id: int) -> ConfigSnapshot | None:
         return self.snapshots.get(snap_id)
 

@@ -129,3 +129,34 @@ def test_separate_repository_login(tmp_path, mock_server):
     from pavs.infra.redaction import scrub
     assert "not-the-repo-password" not in (scrub("x not-the-repo-password y") or "")
     c.close()
+
+
+def test_clear_and_delete_history(ctx):
+    from pavs.services.roles import AppRole, RoleDenied
+    out = ctx.connections.quick_connect(URL, "admin", "admin-test-pw", token="test-token-admin")
+    env = out.environment
+    runs = [ctx.testing.run(env.id, "acme_demo", health=True) for _ in range(3)]
+    ctx.inspection.inspect(env.id, "acme_demo")
+    assert len(ctx.testing.history()) == 3 and len(ctx.inspection.history(env.id, "acme_demo")) == 4    # every run inspects first
+    assert ctx.testing.delete_runs([runs[0].id]) == 1 and len(ctx.testing.history()) == 2
+    # a viewer/tester cannot delete saved results
+    ctx.roles.set_role(AppRole.TESTER)
+    with pytest.raises(RoleDenied, match="Lead"):
+        ctx.testing.clear_history()
+    with pytest.raises(RoleDenied):
+        ctx.inspection.clear_snapshots()
+    ctx.roles.set_role(AppRole.LEAD)
+    assert ctx.testing.clear_history("some-other-env") == 0 and len(ctx.testing.history()) == 2     # scoped to one connection
+    assert ctx.testing.clear_history(env.id) == 2 and ctx.testing.history() == []
+    assert ctx.inspection.clear_snapshots(env.id, "acme_demo") == 4 and ctx.inspection.history(env.id, "acme_demo") == []
+    actions = [r["action"] for r in ctx.audit.recent()]
+    assert "history.clear" in actions and "snapshots.clear" in actions and "history.delete" in actions
+
+
+def test_clearing_history_keeps_the_test_data_cleanup_records(ctx):
+    from pavs.domain.testing import TestArtifact
+    out = ctx.connections.quick_connect(URL, "admin", "admin-test-pw", token="test-token-admin")
+    ctx.testing.run(out.environment.id, "acme_demo", health=True)
+    ctx.testing.artifacts.add(TestArtifact(run_id="r1", environment_id=out.environment.id, project_id="acme_test", ref="AT-1", title="[PAVS-r1] x"))
+    ctx.testing.clear_history()
+    assert [a.ref for a in ctx.testing.leftover_artifacts(out.environment.id)] == ["AT-1"]

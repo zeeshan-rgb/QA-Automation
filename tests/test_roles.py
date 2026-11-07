@@ -31,7 +31,7 @@ def test_action_matrix(ctx):
     expected = {
         AppRole.VIEWER: {Action.VIEW},
         AppRole.TESTER: {Action.VIEW, Action.RUN_TESTS},
-        AppRole.LEAD: {Action.VIEW, Action.RUN_TESTS, Action.WRITE_TESTS, Action.APPROVE_WRITES, Action.SVN_WRITE_TOOLS},
+        AppRole.LEAD: {Action.VIEW, Action.RUN_TESTS, Action.WRITE_TESTS, Action.APPROVE_WRITES, Action.SVN_WRITE_TOOLS, Action.MANAGE_HISTORY},
         AppRole.ADMIN: set(Action),
     }
     for role, allowed in expected.items():
