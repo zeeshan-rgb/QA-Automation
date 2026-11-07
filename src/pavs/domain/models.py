@@ -1,6 +1,9 @@
 """Pydantic models shared by all layers."""
 from __future__ import annotations
 
+import re
+from urllib.parse import unquote
+
 import uuid
 from datetime import datetime, timezone
 from typing import Any
@@ -18,6 +21,34 @@ def utcnow() -> datetime:
 class TlsSettings(BaseModel):
     verify: bool = True
     ca_bundle: str | None = None       # path to a corporate CA bundle (PEM)
+
+
+_PROJECT_IN_URL = re.compile(r"[#/]project/([^/?#]+)", re.IGNORECASE)
+
+
+def split_polarion_url(url: str) -> tuple[str, str | None]:
+    """(base address ending in /polarion, project id found in the address or None).
+
+    People paste the address of a page they were looking at, e.g.
+    http://host/polarion/#/project/Vision/home. Everything after /polarion is dropped, and the project id is kept
+    so the app can preselect it."""
+    v = (url or "").strip()
+    if not v.lower().startswith(("http://", "https://")):
+        raise ValueError("Base URL must start with http:// or https://")
+    project = None
+    m = _PROJECT_IN_URL.search(v.split("/polarion", 1)[1] if "/polarion" in v.lower() else "")
+    if m:
+        project = unquote(m.group(1))
+    low = v.lower()
+    idx = low.find("/polarion")
+    # cut at the first "/polarion" that ends a path segment ("/polarionx" is not it)
+    while idx != -1 and idx + 9 < len(v) and v[idx + 9] not in "/?#":
+        idx = low.find("/polarion", idx + 1)
+    if idx != -1:
+        base = v[: idx + 9]
+    else:
+        base = v.split("#", 1)[0].split("?", 1)[0].rstrip("/") + "/polarion"
+    return base, project
 
 
 class Environment(BaseModel):
@@ -41,12 +72,7 @@ class Environment(BaseModel):
     @field_validator("base_url")
     @classmethod
     def _normalise_url(cls, v: str) -> str:
-        v = v.strip().rstrip("/")
-        if not v.lower().startswith(("http://", "https://")):
-            raise ValueError("Base URL must start with http:// or https://")
-        if not v.lower().endswith("/polarion"):
-            v = v + "/polarion"
-        return v
+        return split_polarion_url(v)[0]
 
     @field_validator("name")
     @classmethod

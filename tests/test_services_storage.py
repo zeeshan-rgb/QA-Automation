@@ -98,3 +98,21 @@ def test_existing_database_is_upgraded_in_place_without_losing_data(tmp_path):
     assert saved.name == "Saved before the upgrade" and saved.test_accounts == {}
     assert db.query("SELECT COUNT(*) AS n FROM test_artifacts")[0]["n"] == 0
     db.close()
+
+
+def test_a_pasted_page_address_is_reduced_to_the_server_address():
+    from pavs.domain.models import Environment, split_polarion_url
+    cases = {
+        "http://localhost/polarion/#/project/Vision/home": ("http://localhost/polarion", "Vision"),
+        "http://localhost/polarion/": ("http://localhost/polarion", None),
+        "https://h.example.com/polarion/polarion/#/project/My%20Proj/wiki/Spec": ("https://h.example.com/polarion", "My Proj"),
+        "https://h.example.com/polarion/login?x=1": ("https://h.example.com/polarion", None),
+        "https://h.example.com": ("https://h.example.com/polarion", None),
+        "https://h.example.com/#/project/Vision": ("https://h.example.com/polarion", None),
+        "http://localhost/polarion/#/project/Vision/home/polarion": ("http://localhost/polarion", "Vision"),
+    }
+    for given, (base, project) in cases.items():
+        assert split_polarion_url(given) == (base, project), given
+        assert Environment(name="x", base_url=given).base_url == base
+    with pytest.raises(ValueError):
+        split_polarion_url("localhost/polarion")

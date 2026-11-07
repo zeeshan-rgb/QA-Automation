@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, 
 from ...app import AppContext
 from ...domain.enums import EnvironmentKind
 from ...domain.errors import PavsError
-from ...domain.models import ServerProfile
+from ...domain.models import ServerProfile, split_polarion_url
 from ...domain.testing import TestRunRecord
 from ..theme import STATUS_COLORS
 from ..widgets import heading, item, make_table, pretty
@@ -351,6 +351,15 @@ class ConnectTestPage(QWidget):
         if not url:
             self.conn_status.setText("Enter the Polarion URL.")
             return
+        try:
+            base, hint = split_polarion_url(url)
+        except ValueError as exc:
+            self.conn_status.setStyleSheet("color: #b42318;")
+            self.conn_status.setText(str(exc))
+            return
+        if base != url.rstrip("/"):
+            self.url.setText(base)            # a pasted page address is reduced to the server address
+            url = base
         self._connected_ok = False
         self._busy_state(True)
         self.progress.setValue(0)
@@ -371,6 +380,13 @@ class ConnectTestPage(QWidget):
             self.token.clear()
             if out.ok:
                 self._fill_projects()
+                if hint:
+                    i = self.project.findData(hint)
+                    if i < 0:
+                        i = self.project.findText(hint, Qt.MatchStartsWith)
+                    if i >= 0:
+                        self.project.setCurrentIndex(i)
+                        self.conn_status.setText(out.message + f" Project {hint} selected from the address.")
             self.refresh_saved_keep(out.environment.id if out.environment else None)
 
         run_in_background(work, done, lambda msg: (self.conn_status.setStyleSheet("color:#b42318"),
