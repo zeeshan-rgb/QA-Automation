@@ -1,10 +1,12 @@
 """Main window: sidebar navigation + pages."""
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
+import sys
+
+from PySide6.QtCore import QProcess, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import (QComboBox, QFrame, QInputDialog, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-                               QMainWindow, QMessageBox, QScrollArea, QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget)
+                               QMainWindow, QMessageBox, QPushButton, QScrollArea, QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget)
 
 from .. import APP_NAME, APP_TAGLINE, __version__
 from ..app import AppContext
@@ -85,6 +87,10 @@ class MainWindow(QMainWindow):
             self.role_box.setItemData(self.role_box.count() - 1, r_desc(r), Qt.ToolTipRole)
         self._show_role()
         self.role_box.currentIndexChanged.connect(self._role_chosen)
+        self.btn_new_window = QPushButton("New window")
+        self.btn_new_window.setToolTip("Open another independent copy of the app (same data, its own connections).")
+        self.btn_new_window.clicked.connect(self.open_new_window)
+        sl.addWidget(self.btn_new_window)
         sl.addWidget(role_label)
         sl.addWidget(self.role_box)
         ver = QLabel(f"v{__version__}")
@@ -103,6 +109,20 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Read-only unless you approve test data in a test project  |  Credentials: {vault}  |  Data: {ctx.db.path}")
         self.environments.profile_updated.connect(self._profile_updated)
         self.nav.setCurrentRow(0)
+
+    def bring_to_front(self) -> None:
+        """Called when the app is started again: show this window instead of opening a second one."""
+        if self.isMinimized():
+            self.showNormal()
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
+    def open_new_window(self) -> bool:
+        """Start a separate copy of the app (the --new option)."""
+        if getattr(sys, "frozen", False):
+            return QProcess.startDetached(sys.executable, ["--new"])
+        return QProcess.startDetached(sys.executable, ["-m", "pavs", "--new"])
 
     def _show_role(self) -> None:
         self.role_box.blockSignals(True)

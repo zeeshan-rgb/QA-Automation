@@ -15,6 +15,7 @@ if not exist "%PY%" (
 set "CMD=%~1"
 if "%CMD%"=="" set "CMD=start"
 if /i "%CMD%"=="start" (start "" "%PYW%" -m pavs & exit /b 0)
+if /i "%CMD%"=="new"   (start "" "%PYW%" -m pavs --new & exit /b 0)
 if /i "%CMD%"=="test"  (pushd "%ROOT%" & "%PY%" -m pytest tests -q %2 %3 %4 & popd & exit /b 0)
 if /i "%CMD%"=="mock"  (
   set "PROFILE=%~2" & set "PORT=%~3"
@@ -22,9 +23,10 @@ if /i "%CMD%"=="mock"  (
   if "%PORT%"=="" set "PORT=8810"
   pushd "%ROOT%" & "%PY%" -m mock_polarion.serve %PROFILE% --port %PORT% & popd & exit /b 0)
 if /i "%CMD%"=="cli"   (shift & "%PY%" -m pavs.cli %1 %2 %3 %4 %5 %6 %7 %8 %9 & exit /b %ERRORLEVEL%)
-if /i "%CMD%"=="exe"   (start "" "D:\PavsBuild\dist\PolarionValidationStudio\PolarionValidationStudio.exe" & exit /b 0)
+if /i "%CMD%"=="exe"   (start "" "D:\PavsBuild\dist\PolarionValidationStudio\PolarionValidationStudio.exe" %2 & exit /b 0)
 echo.
-echo   qa start              open the app (default)
+echo   qa start              open the app; if it is already open, bring that window to the front
+echo   qa new                open another, independent window on purpose
 echo   qa mock [profile] [port]   start the fake Polarion (default 2606, port 8810; admin / admin-test-pw)
 echo   qa test               run the automated tests
 echo   qa cli ...            command line, e.g.  qa cli run --url URL --project ID --out report.pdf

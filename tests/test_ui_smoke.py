@@ -170,3 +170,49 @@ def test_merge_page_shows_a_comparison(qapp, tmp_path, mock_server):
     page.table.selectRow(0)
     assert page.btn_diff.isEnabled()
     ctx.close()
+
+
+def test_second_launch_brings_the_open_window_forward(qapp, tmp_path):
+    from pavs.ui import single_instance as si
+    name = si.instance_name(str(tmp_path / "one"))
+    assert name == si.instance_name(str(tmp_path / "ONE") + "/") and name != si.instance_name(str(tmp_path / "two"))
+    assert si.forward_to_running(name, 150) is False            # nothing running: this launch becomes the main window
+    raised = []
+    server = si.listen(name, lambda: raised.append(1))
+    assert server is not None
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    code = ("import sys; from PySide6.QtWidgets import QApplication; from pavs.ui import single_instance as si; "
+            f"app = QApplication([]); sys.exit(0 if si.forward_to_running({name!r}) else 3)")
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=src)
+    child = subprocess.Popen([sys.executable, "-c", code], env=env)               # the second launch is another process
+    for _ in range(600):
+        qapp.processEvents()
+        if child.poll() is not None:
+            break
+        __import__("time").sleep(0.01)
+    assert child.wait(5) == 0                                   # a second launch only asks the first one to show itself
+    for _ in range(50):
+        qapp.processEvents()
+    assert raised == [1]
+    server.close()
+    assert si.forward_to_running(name, 150) is False
+
+
+def test_new_window_button_and_flag_start_a_separate_copy(qapp, tmp_path, monkeypatch):
+    import sys
+    from PySide6.QtCore import QProcess
+    from pavs.ui.main_window import MainWindow
+    started = []
+    monkeypatch.setattr(QProcess, "startDetached", staticmethod(lambda prog, args: started.append((prog, args)) or True))
+    ctx = build_context(db_path=tmp_path / "nw.sqlite3", vault_backend=MemoryBackend(), log_to_file=False)
+    win = MainWindow(ctx)
+    win.btn_new_window.click()
+    assert started == [(sys.executable, ["-m", "pavs", "--new"])]
+    win.bring_to_front()                                         # must not raise on a hidden or minimised window
+    from pavs.__main__ import _parser
+    assert _parser().parse_known_args(["--new"])[0].new is True and _parser().parse_known_args([])[0].new is False
+    ctx.close()

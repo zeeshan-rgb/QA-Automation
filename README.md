@@ -23,7 +23,7 @@ Taken against the bundled mock Polarion (invented data), so they show the app, n
 
 ## How to use it
 
-1. Double-click **Start Polarion Validation Studio.bat** (or run `.\run.ps1`), or use the built `PolarionValidationStudio.exe`.
+1. Double-click **Start Polarion Validation Studio.bat** (or run `.\run.ps1`), or use the built `PolarionValidationStudio.exe`. Starting it again while it is open just brings the open window to the front; for a second, independent window use the **New window** button, `qa new`, or `--new`.
 2. **Connect & Test** page: enter the Polarion URL (e.g. `https://polarion-dev.example.local/polarion`), your user name and password (or a Personal Access Token) and press **Connect**. Tick *Remember credentials* only if you want them kept in Windows Credential Manager.
 3. Pick the **project** from the list.
 4. Choose what to test, then **Run tests**:
