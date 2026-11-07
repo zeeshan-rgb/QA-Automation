@@ -63,6 +63,8 @@ def plan_auth(env: Environment, creds: Credentials | None) -> AuthPlan:
         if not env.username:
             raise CredentialError("Password authentication needs a username.")
     user = env.username if pw else None
+    svn_user = creds.svn_user or env.username
+    svn_password = creds.svn_password or pw
     is_jwt = looks_like_jwt(token)
     return AuthPlan(
         rest_token=token,
@@ -70,6 +72,6 @@ def plan_auth(env: Environment, creds: Credentials | None) -> AuthPlan:
         soap_token=None if is_jwt else token,       # SOAP logInWithToken takes Personal Access Tokens, not JWTs
         soap_user=user,
         soap_password=pw,
-        svn_user=user,
-        svn_password=pw,
+        svn_user=svn_user,
+        svn_password=svn_password,
     )

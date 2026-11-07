@@ -30,7 +30,7 @@ def test_environment_url_normalisation():
 def test_save_list_delete_and_credentials(ctx):
     env = ctx.environments.save(make_env(name="Dev"), ADMIN_TOKEN)
     assert [e.name for e in ctx.environments.list()] == ["Dev"]
-    assert ctx.environments.has_credentials(env.id) == {"token": True, "password": False}
+    assert ctx.environments.has_credentials(env.id) == {"token": True, "password": False, "svn_password": False}
     # updating without a new secret keeps the stored one
     ctx.environments.save(env.model_copy(update={"notes": "x"}), Credentials())
     assert ctx.environments.credentials(env.id).token == "test-token-admin"

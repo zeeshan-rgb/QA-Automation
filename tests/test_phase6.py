@@ -110,3 +110,22 @@ def test_cli_merge_check(ctx, env_creds, tmp_path, capsys):
     assert code == cli.EXIT_FAILED and "WOULD BREAK" in text and "render.vm" in text     # the incoming Velocity template has a real V01 error
     assert out.read_bytes().startswith(b"%PDF") and "admin-test-pw" not in text
     assert "Two-way comparison" in text
+
+
+def test_separate_repository_login(tmp_path, mock_server):
+    """/repo may use a different login than the Polarion login: the optional repository user/password are used for SVN only."""
+    from pavs.domain.enums import ProviderKind, ProviderState
+    app, wsgi = mock_server("2606")
+    c = build_context(db_path=tmp_path / "svn.sqlite3", vault_backend=MemoryBackend(), http_transport=wsgi, log_to_file=False)
+    # wrong repository login: SVN fails, SOAP (Polarion login) still works
+    out = c.connections.quick_connect(URL, "admin", "admin-test-pw", svn_user="admin", svn_password="not-the-repo-password")
+    assert out.profile.provider(ProviderKind.SOAP).state == ProviderState.AUTHENTICATED
+    assert out.profile.provider(ProviderKind.SVN).state == ProviderState.AUTH_FAILED
+    assert "separate" in out.profile.provider(ProviderKind.SVN).detail
+    # right repository login
+    out = c.connections.quick_connect(URL, "admin", "admin-test-pw", svn_user="admin", svn_password="admin-test-pw")
+    assert out.profile.provider(ProviderKind.SVN).state == ProviderState.AUTHENTICATED
+    # the repository password is registered for redaction and never appears in the stored profile
+    from pavs.infra.redaction import scrub
+    assert "not-the-repo-password" not in (scrub("x not-the-repo-password y") or "")
+    c.close()

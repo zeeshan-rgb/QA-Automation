@@ -48,11 +48,13 @@ class EnvironmentService:
             raise ConfigurationError(f"An environment called '{env.name}' already exists.")
         is_new = self.repo.get(env.id) is None
         self.repo.save(env)
-        if creds is not None and (creds.token or creds.password):
+        if creds is not None and (creds.token or creds.password or creds.svn_password):
             merged = creds
             if keep_existing_secret:
                 old = self.credentials(env.id) or Credentials()
-                merged = Credentials(token=creds.token or old.token, password=creds.password or old.password)
+                merged = Credentials(token=creds.token or old.token, password=creds.password or old.password,
+                                     svn_user=creds.svn_user or old.svn_user,
+                                     svn_password=creds.svn_password or old.svn_password)
             if persist and self.vault.persistent:
                 self.vault.save(env.credential_key, merged)
                 self._session_creds.pop(env.id, None)
@@ -134,4 +136,4 @@ class EnvironmentService:
 
     def has_credentials(self, env_id: str) -> dict[str, bool]:
         c = self.credentials(env_id) or Credentials()
-        return {"token": bool(c.token), "password": bool(c.password)}
+        return {"token": bool(c.token), "password": bool(c.password), "svn_password": bool(c.svn_password)}

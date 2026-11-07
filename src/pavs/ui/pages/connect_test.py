@@ -93,6 +93,11 @@ class ConnectTestPage(QWidget):
         self.token = QLineEdit()
         self.token.setEchoMode(QLineEdit.Password)
         self.token.setPlaceholderText("optional: Personal Access Token")
+        self.svn_user = QLineEdit()
+        self.svn_user.setPlaceholderText("optional: only if /repo uses a different login")
+        self.svn_password = QLineEdit()
+        self.svn_password.setEchoMode(QLineEdit.Password)
+        self.svn_password.setPlaceholderText("optional: repository password")
         self.kind = QComboBox()
         for k in EnvironmentKind:
             self.kind.addItem(k.value.capitalize(), k)
@@ -115,6 +120,8 @@ class ConnectTestPage(QWidget):
         form.addRow("User name", self.user)
         form.addRow("Password", self.password)
         form.addRow("Access token", self.token)
+        form.addRow("Repository user", self.svn_user)
+        form.addRow("Repository password", self.svn_password)
         opts = QVBoxLayout()
         for c in (self.read_files, self.remember, self.verify):
             opts.addWidget(c)
@@ -333,6 +340,7 @@ class ConnectTestPage(QWidget):
         stored = self.ctx.environments.has_credentials(env_id)
         self.password.setPlaceholderText("stored" if stored["password"] else "")
         self.token.setPlaceholderText("stored" if stored["token"] else "optional: Personal Access Token")
+        self.svn_password.setPlaceholderText("stored" if stored.get("svn_password") else "optional: repository password")
 
     def _progress(self, msg: str, pct: int) -> None:
         self.conn_status.setText(msg)
@@ -344,10 +352,12 @@ class ConnectTestPage(QWidget):
             return
         url, user, pw, tok = self.url.text().strip(), self.user.text().strip(), self.password.text(), self.token.text().strip()
         env_id = self.saved.currentData()
-        if env_id and not (pw or tok):          # reuse stored credentials of the saved connection
+        svn_user, svn_pw = self.svn_user.text().strip(), self.svn_password.text()
+        if env_id:                                  # anything left blank is taken from the saved connection
             stored = self.ctx.environments.credentials(env_id)
             if stored:
-                pw, tok = stored.password or "", stored.token or ""
+                pw, tok = pw or stored.password or "", tok or stored.token or ""
+                svn_user, svn_pw = svn_user or stored.svn_user or "", svn_pw or stored.svn_password or ""
         if not url:
             self.conn_status.setText("Enter the Polarion URL.")
             return
@@ -369,7 +379,8 @@ class ConnectTestPage(QWidget):
         kind = EnvironmentKind(self.kind.currentData() or "development")
 
         def work(progress):
-            return self.ctx.connections.quick_connect(url, user, pw, tok, read_files, remember, verify, progress=progress, kind=kind)
+            return self.ctx.connections.quick_connect(url, user, pw, tok, read_files, remember, verify, progress=progress, kind=kind,
+                                                 svn_user=svn_user, svn_password=svn_pw)
 
         def done(out) -> None:
             self.env, self.profile = out.environment, out.profile
@@ -378,6 +389,7 @@ class ConnectTestPage(QWidget):
             self.conn_status.setText(out.message)
             self.password.clear()
             self.token.clear()
+            self.svn_password.clear()
             if out.ok:
                 self._fill_projects()
                 if hint:

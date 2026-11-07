@@ -88,12 +88,13 @@ class CredentialVault:
     def save(self, key: str, creds: Credentials) -> None:
         if not self._backend.secure:
             raise CredentialError("No secure credential storage is available on this system.")
-        payload = json.dumps({"token": creds.token, "password": creds.password})
+        payload = json.dumps({"token": creds.token, "password": creds.password,
+                              "svn_user": creds.svn_user, "svn_password": creds.svn_password})
         try:
             self._backend.set(key, payload)
         except Exception as exc:
             raise CredentialError(f"Could not store credentials: {type(exc).__name__}") from None
-        SecretRegistry.register(creds.token, creds.password)
+        SecretRegistry.register(creds.token, creds.password, creds.svn_password)
 
     def load(self, key: str) -> Credentials | None:
         try:
@@ -103,8 +104,9 @@ class CredentialVault:
         if not raw:
             return None
         data = json.loads(raw)
-        creds = Credentials(token=data.get("token"), password=data.get("password"))
-        SecretRegistry.register(creds.token, creds.password)
+        creds = Credentials(token=data.get("token"), password=data.get("password"),
+                            svn_user=data.get("svn_user"), svn_password=data.get("svn_password"))
+        SecretRegistry.register(creds.token, creds.password, creds.svn_password)
         return creds
 
     def delete(self, key: str) -> None:

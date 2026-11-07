@@ -96,6 +96,8 @@ class Credentials(BaseModel):
     """Secrets for one environment. Never persisted outside the vault, never logged."""
     token: str | None = None
     password: str | None = None
+    svn_user: str | None = None          # only when the repository (/repo) login differs from the Polarion login
+    svn_password: str | None = None
 
     def __repr__(self) -> str:   # pragma: no cover - defensive
         return "Credentials(<redacted>)"

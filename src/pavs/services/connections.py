@@ -45,7 +45,8 @@ class ConnectionService:
     def quick_connect(self, url: str, username: str = "", password: str = "", token: str = "",
                       read_config_files: bool = True, remember: bool = False, verify_tls: bool = True,
                       name: str = "", progress: Progress | None = None,
-                      kind: EnvironmentKind = EnvironmentKind.DEVELOPMENT) -> ConnectOutcome:
+                      kind: EnvironmentKind = EnvironmentKind.DEVELOPMENT,
+                      svn_user: str = "", svn_password: str = "") -> ConnectOutcome:
         """The simple flow: URL + credentials -> connected, projects listed. Blocking (use a worker thread)."""
         username, token = username.strip(), token.strip()
         if not token and not (username and password):
@@ -53,7 +54,7 @@ class ConnectionService:
         method = (AuthMethod.TOKEN_AND_PASSWORD if token and password else
                   AuthMethod.TOKEN if token else AuthMethod.PASSWORD)
         providers = [ProviderKind.REST, ProviderKind.SOAP]
-        if read_config_files and password:
+        if read_config_files and (password or svn_password):
             providers.append(ProviderKind.SVN)
         try:
             existing = self.environments.find_by_url(url)
@@ -66,7 +67,8 @@ class ConnectionService:
             msg = "; ".join(f"{e['loc'][0]}: {e['msg']}" for e in exc.errors()) if isinstance(exc, ValidationError) else str(exc)
             return ConnectOutcome(False, f"Check the connection details: {msg}")
         try:
-            self.environments.save(env, Credentials(token=token or None, password=password or None),
+            self.environments.save(env, Credentials(token=token or None, password=password or None,
+                                                    svn_user=svn_user.strip() or None, svn_password=svn_password or None),
                                    keep_existing_secret=False, persist=remember)
             profile = self.connect(env, progress)
         except RoleDenied:

@@ -72,7 +72,7 @@ class ConnectionManager:
                 progress: Progress | None = None, verify: bool = True) -> Session:
         report = progress or (lambda msg, pct: None)
         if creds is not None:
-            SecretRegistry.register(creds.token, creds.password)
+            SecretRegistry.register(creds.token, creds.password, creds.svn_password)
         recorder = ExchangeRecorder()
         guard = WriteGuard(env, self.audit)
         transport = HttpTransport(env.tls, env.timeout_seconds, guard, recorder,

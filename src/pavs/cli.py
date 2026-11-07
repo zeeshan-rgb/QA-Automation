@@ -8,6 +8,7 @@
 
 Secrets are never taken from the command line (they would show up in process lists and shell history).
 Set PAVS_USER and PAVS_PASSWORD and/or PAVS_TOKEN (a Personal Access Token or a JWT) in the environment.
+If the repository (/repo) uses a different login: PAVS_SVN_USER and PAVS_SVN_PASSWORD.
 
 Exit codes: 0 passed (or passed with gaps), 1 a check failed (or gaps with --strict), 2 could not run
 (connection, sign-in, role or usage problem).
@@ -48,7 +49,8 @@ def _connect(ctx: AppContext, args):
     outcome = ctx.connections.quick_connect(
         args.url, user, password, token, read_config_files=not args.no_config_files,
         verify_tls=not args.insecure, kind=EnvironmentKind(args.kind),
-        progress=lambda msg, pct: None)
+        progress=lambda msg, pct: None,
+        svn_user=os.environ.get("PAVS_SVN_USER", "").strip(), svn_password=os.environ.get("PAVS_SVN_PASSWORD", ""))
     if not outcome.ok:
         raise PavsError(outcome.message)
     return outcome
