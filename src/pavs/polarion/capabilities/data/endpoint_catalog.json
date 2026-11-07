@@ -1,0 +1,3164 @@
+{
+ "generated": "2026-11-06",
+ "source_spec_version": "2606",
+ "oldest_logged_release": "2310",
+ "releases": [
+  "2310",
+  "2404",
+  "2410",
+  "2506",
+  "2512",
+  "2606"
+ ],
+ "note": "since=null means the endpoint predates oldest_logged_release. Endpoint descriptions from the vendor spec are deliberately not stored.",
+ "operations": [
+  {
+   "method": "GET",
+   "path": "/actions/getFieldsMetadata",
+   "tag": "Metadata",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/all/documents",
+   "tag": "Documents",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/all/documents/actions/branch",
+   "tag": "Documents",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/all/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/all/workitems",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/all/workitems",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/all/workitems",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/customfields",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations",
+   "tag": "Enumerations",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/enumerations",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations/defaulticons",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations/defaulticons/{iconId}",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations/icons",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/enumerations/icons",
+   "tag": "Icons",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations/icons/{iconId}",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/jobs",
+   "tag": "Jobs",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/jobs/actions/execute",
+   "tag": "Jobs",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/jobs/{jobId}",
+   "tag": "Jobs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/jobs/{jobId}/actions/download/{filename}",
+   "tag": "Jobs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/jobs/{jobId}/log/content",
+   "tag": "Jobs",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/license",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/license",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/license/assignments",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/license/assignments",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/license/assignments/{userId}",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/license/assignments/{userId}",
+   "tag": "License",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "DELETE",
+   "path": "/license/types/{typeId}/slots",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/license/types/{typeId}/slots",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/license/types/{typeId}/slots",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/license/types/{typeId}/slots/{model}/{group}",
+   "tag": "License",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/llms",
+   "tag": "AI",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "POST",
+   "path": "/llms/actions/generateCompletion",
+   "tag": "AI",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/metadata",
+   "tag": "Metadata",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects",
+   "tag": "Projects",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/actions/createProject",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/actions/markProject",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}",
+   "tag": "Projects",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/actions/getFieldsMetadata",
+   "tag": "Metadata",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/actions/moveProject",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/actions/unmarkProject",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/collections",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/collections",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/collections",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/collections/{collectionId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/collections/{collectionId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/collections/{collectionId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/collections/{collectionId}/actions/close",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/collections/{collectionId}/actions/getFieldsMetadata",
+   "tag": "Collections",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/collections/{collectionId}/actions/reopen",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/collections/{collectionId}/actions/reuse",
+   "tag": "Collections",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/collections/{collectionId}/relationships/{relationshipId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/collections/{collectionId}/relationships/{relationshipId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/collections/{collectionId}/relationships/{relationshipId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/collections/{collectionId}/relationships/{relationshipId}",
+   "tag": "Collections",
+   "since": "2410",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/customfields",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/customfields/{resourceType}/{targetType}",
+   "tag": "Custom Fields",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/documents",
+   "tag": "Documents",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/documents/fields/{fieldId}/actions/getAvailableOptions",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/enumerations",
+   "tag": "Enumerations",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/enumerations",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/enumerations/icons",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/enumerations/icons",
+   "tag": "Icons",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/enumerations/icons/{iconId}",
+   "tag": "Icons",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/enumerations/{enumContext}/{enumName}/{targetType}",
+   "tag": "Enumerations",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/plans",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/plans",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/plans",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/plans/{planId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/plans/{planId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/plans/{planId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/plans/{planId}/actions/getFieldsMetadata",
+   "tag": "Plans",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/plans/{planId}/relationships/{relationshipId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/plans/{planId}/relationships/{relationshipId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/plans/{planId}/relationships/{relationshipId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/plans/{planId}/relationships/{relationshipId}",
+   "tag": "Plans",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents",
+   "tag": "Documents",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/actions/importWordDocument",
+   "tag": "Documents",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/actions/branch",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/actions/copy",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/actions/getFieldsMetadata",
+   "tag": "Documents",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/actions/mergeFromMaster",
+   "tag": "Documents",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/actions/mergeToMaster",
+   "tag": "Documents",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/attachments",
+   "tag": "Document Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/attachments",
+   "tag": "Document Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/attachments/{attachmentId}",
+   "tag": "Document Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/attachments/{attachmentId}",
+   "tag": "Document Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/attachments/{attachmentId}/content",
+   "tag": "Document Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/comments",
+   "tag": "Document Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/comments",
+   "tag": "Document Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/comments/{commentId}",
+   "tag": "Document Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/comments/{commentId}",
+   "tag": "Document Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/fields/{fieldId}/actions/getAvailableOptions",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/fields/{fieldId}/actions/getCurrentOptions",
+   "tag": "Documents",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts",
+   "tag": "Document Parts",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts",
+   "tag": "Document Parts",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts",
+   "tag": "Document Parts",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts/actions/overwrite",
+   "tag": "Document Parts",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts/{partId}",
+   "tag": "Document Parts",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts/{partId}/actions/move",
+   "tag": "Document Parts",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}",
+   "tag": "Pages",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}",
+   "tag": "Pages",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments",
+   "tag": "Page Attachments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments",
+   "tag": "Page Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments/{attachmentId}",
+   "tag": "Page Attachments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments/{attachmentId}",
+   "tag": "Page Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments/{attachmentId}",
+   "tag": "Page Attachments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/attachments/{attachmentId}/content",
+   "tag": "Page Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/comments",
+   "tag": "Page Comments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/comments",
+   "tag": "Page Comments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/comments/{commentId}",
+   "tag": "Page Comments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/comments/{commentId}",
+   "tag": "Page Comments",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/relationships/{relationshipId}",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/relationships/{relationshipId}",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/relationships/{relationshipId}",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/spaces/{spaceId}/pages/{pageName}/relationships/{relationshipId}",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testparameterdefinitions",
+   "tag": "Projects",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testparameterdefinitions",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testparameterdefinitions",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testparameterdefinitions/{testParamId}",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testparameterdefinitions/{testParamId}",
+   "tag": "Projects",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns",
+   "tag": "Test Runs",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns",
+   "tag": "Test Runs",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/actions/exportTestsToExcel",
+   "tag": "Test Runs",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/actions/getFieldsMetadata",
+   "tag": "Test Runs",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/actions/getWorkflowActions",
+   "tag": "Test Runs",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/actions/importExcelTestResults",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/actions/importXUnitTestResults",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments",
+   "tag": "Test Run Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments/{attachmentId}",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments/{attachmentId}",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments/{attachmentId}",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/attachments/{attachmentId}/content",
+   "tag": "Test Run Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/comments",
+   "tag": "Test Run Comments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/comments",
+   "tag": "Test Run Comments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/comments",
+   "tag": "Test Run Comments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/comments/{commentId}",
+   "tag": "Test Run Comments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/comments/{commentId}",
+   "tag": "Test Run Comments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameterdefinitions",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameterdefinitions",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameterdefinitions/{testParamId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameterdefinitions/{testParamId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameters",
+   "tag": "Test Runs",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameters",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameters",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameters/{testParamId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testparameters/{testParamId}",
+   "tag": "Test Runs",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords",
+   "tag": "Test Records",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}",
+   "tag": "Test Records",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/actions/getFieldsMetadata",
+   "tag": "Test Records",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments",
+   "tag": "Test Record Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments",
+   "tag": "Test Record Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments",
+   "tag": "Test Record Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments/{attachmentId}",
+   "tag": "Test Record Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments/{attachmentId}",
+   "tag": "Test Record Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments/{attachmentId}",
+   "tag": "Test Record Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/attachments/{attachmentId}/content",
+   "tag": "Test Record Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/testparameters",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/testparameters",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/testparameters/{testParamId}",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/testparameters/{testParamId}",
+   "tag": "Test Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults",
+   "tag": "Test Step Results",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults",
+   "tag": "Test Step Results",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults",
+   "tag": "Test Step Results",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}",
+   "tag": "Test Step Results",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}",
+   "tag": "Test Step Results",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments",
+   "tag": "Test Step Result Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments",
+   "tag": "Test Step Result Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments",
+   "tag": "Test Step Result Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments/{attachmentId}",
+   "tag": "Test Step Result Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments/{attachmentId}",
+   "tag": "Test Step Result Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments/{attachmentId}",
+   "tag": "Test Step Result Attachments",
+   "since": "2404",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/testruns/{testRunId}/testrecords/{testCaseProjectId}/{testCaseId}/{iteration}/teststepresults/{testStepIndex}/attachments/{attachmentId}/content",
+   "tag": "Test Step Result Attachments",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2506",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2506",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/actions/moveToDocument",
+   "tag": "Work Items",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/fields/{fieldId}/actions/getAvailableOptions",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2506",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2506",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/actions/getFieldsMetadata",
+   "tag": "Work Items",
+   "since": "2606",
+   "removed_in": null,
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/actions/getWorkflowActions",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/actions/moveFromDocument",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/actions/moveToDocument",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals/{userId}",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals/{userId}",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/approvals/{userId}",
+   "tag": "Work Item Approvals",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments/{attachmentId}",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments/{attachmentId}",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments/{attachmentId}",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/attachments/{attachmentId}/content",
+   "tag": "Work Item Attachments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/backlinkedworkitems",
+   "tag": "Linked Work Items",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/backlinkedworkitems",
+   "tag": "Linked Work Items",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/comments",
+   "tag": "Work Item Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/comments",
+   "tag": "Work Item Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/comments/{commentId}",
+   "tag": "Work Item Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/comments/{commentId}",
+   "tag": "Work Item Comments",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/externallylinkedworkitems",
+   "tag": "Externally Linked Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/externallylinkedworkitems",
+   "tag": "Externally Linked Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/externallylinkedworkitems",
+   "tag": "Externally Linked Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/externallylinkedworkitems/{roleId}/{hostname}/{targetProjectId}/{linkedWorkItemId}",
+   "tag": "Externally Linked Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/externallylinkedworkitems/{roleId}/{hostname}/{targetProjectId}/{linkedWorkItemId}",
+   "tag": "Externally Linked Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/featureselections",
+   "tag": "Feature Selections",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/featureselections/{selectionTypeId}/{targetProjectId}/{targetWorkItemId}",
+   "tag": "Feature Selections",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/fields/{fieldId}/actions/getAvailableOptions",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/fields/{fieldId}/actions/getCurrentOptions",
+   "tag": "Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedoslcresources",
+   "tag": "Linked Oslc Resources",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedoslcresources",
+   "tag": "Linked Oslc Resources",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedoslcresources",
+   "tag": "Linked Oslc Resources",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems/{roleId}/{targetProjectId}/{linkedWorkItemId}",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems/{roleId}/{targetProjectId}/{linkedWorkItemId}",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/linkedworkitems/{roleId}/{targetProjectId}/{linkedWorkItemId}",
+   "tag": "Linked Work Items",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/relationships/{relationshipId}",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/relationships/{relationshipId}",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/relationships/{relationshipId}",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/relationships/{relationshipId}",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/testparameterdefinitions",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/testparameterdefinitions/{testParamId}",
+   "tag": "Work Items",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps/{testStepIndex}",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps/{testStepIndex}",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/projects/{projectId}/workitems/{workItemId}/teststeps/{testStepIndex}",
+   "tag": "Test Steps",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/workrecords",
+   "tag": "Work Item Work Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/workrecords",
+   "tag": "Work Item Work Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{projectId}/workitems/{workItemId}/workrecords",
+   "tag": "Work Item Work Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/projects/{projectId}/workitems/{workItemId}/workrecords/{workRecordId}",
+   "tag": "Work Item Work Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/projects/{projectId}/workitems/{workItemId}/workrecords/{workRecordId}",
+   "tag": "Work Item Work Records",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/projects/{}/testruns/{}/actions/exportTestsToExcel",
+   "tag": "",
+   "since": "2310",
+   "removed_in": "2506",
+   "modified_in": []
+  },
+  {
+   "method": "GET",
+   "path": "/projecttemplates",
+   "tag": "Project Templates",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/revisions",
+   "tag": "Revisions",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/revisions/{repositoryName}/{revision}",
+   "tag": "Revisions",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/roles/{roleId}",
+   "tag": "Roles",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/spaces/{spaceId}/pages",
+   "tag": "Pages",
+   "since": "2512",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/user",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/usergroups/{groupId}",
+   "tag": "User Groups",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/users",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2404",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/users",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/users/{userId}",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2512",
+    "2606"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/users/{userId}",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2606"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/users/{userId}/actions/getAvatar",
+   "tag": "Users",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2404",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/users/{userId}/actions/setLicense",
+   "tag": "Users",
+   "since": null,
+   "removed_in": null,
+   "modified_in": [
+    "2310",
+    "2410",
+    "2506",
+    "2606"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/users/{userId}/actions/updateAvatar",
+   "tag": "Users",
+   "since": "2310",
+   "removed_in": null,
+   "modified_in": [
+    "2606"
+   ]
+  }
+ ]
+}

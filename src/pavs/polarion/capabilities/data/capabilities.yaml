@@ -1,0 +1,265 @@
+# Capability registry definition (hand-maintained; see docs/ARCHITECTURE.md section 6.2).
+#
+# Each capability lists strategies in priority order. A strategy is usable when its
+# provider is enabled + reachable (+ authenticated) for the environment and every
+# requirement exists on the server:
+#   rest: "METHOD /path"         checked against the live /rest/v1/definition, else the
+#                                endpoint catalog for the detected release
+#   soap: "Service.operation"    checked against the live WSDL operation list
+#   svn:  "path in the repo"     checked when the SVN reader is enabled (opt-in)
+# coverage: full | partial  (partial -> CapabilityStatus.PARTIAL)
+# probe:    optional authenticated GET used to VERIFY the strategy on this server.
+#           {projectId} / {userId} are filled from discovery; skipped if unavailable.
+# write: true marks capabilities that change data (always behind the Write Guard).
+
+capabilities:
+
+  # ------------------------------------------------------------------ discovery
+  - id: server.metadata
+    title: Server metadata (version, build, REST limits)
+    area: discovery
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /metadata"], probe: "GET /metadata"}
+    notes: REST /metadata exists from 2512. Older releases rely on unauthenticated version signals.
+
+  - id: projects.list
+    title: List projects
+    area: discovery
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects"], probe: "GET /projects?page[size]=1"}
+      - {provider: soap, coverage: full, requires: ["Project.getRootProjectGroup", "Project.getDeepContainedProjects"], probe: "Project.getRootProjectGroup"}
+
+  - id: users.current
+    title: Current user
+    area: discovery
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /user"], probe: "GET /user"}
+      - {provider: soap, coverage: full, requires: ["Security.getUserFromToken"]}
+
+  - id: users.list
+    title: List users
+    area: discovery
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /users"], probe: "GET /users?page[size]=1"}
+      - {provider: soap, coverage: full, requires: ["Project.getUsers"]}
+
+  - id: projects.users
+    title: Users of a project
+    area: discovery
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Project.getProjectUsers"]}
+    notes: Not available in REST (REST guide, Limitations - "Get all users of a Project").
+
+  - id: spaces.list
+    title: Document and page spaces of a project
+    area: discovery
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Tracker.getDocumentSpaces", "Tracker.getWikiSpaces"]}
+    notes: REST has no Spaces endpoint (REST guide, Limitations).
+
+  # ------------------------------------------------------------------ roles & permissions
+  - id: roles.global
+    title: Global roles
+    area: roles
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Security.getGlobalRoles"], probe: "Security.getGlobalRoles"}
+      - {provider: svn, coverage: full, requires: [".polarion/security/user-roles.xml"]}
+      - {provider: rest, coverage: partial, requires: ["GET /roles/{roleId}"]}
+    notes: REST can read one global role by id but cannot list roles.
+
+  - id: roles.project
+    title: Project (context) roles
+    area: roles
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Security.getContextRoles"]}
+      - {provider: svn, coverage: full, requires: [".polarion/security/user-roles.xml"]}
+
+  - id: roles.assignments
+    title: User and group role assignments
+    area: roles
+    strategies:
+      - {provider: soap, coverage: partial, requires: ["Security.getRolesForUser"]}
+      - {provider: svn, coverage: full, requires: [".polarion/security/user-roles.xml"]}
+    notes: SOAP answers per user; group assignments need the SVN file.
+
+  - id: usergroups.read
+    title: User groups
+    area: roles
+    strategies:
+      - {provider: rest, coverage: partial, requires: ["GET /usergroups/{groupId}"]}
+      - {provider: svn, coverage: full, requires: [".polarion/user-management/"]}
+    notes: REST reads one group by id; it cannot list groups.
+
+  - id: permissions.check
+    title: Effective permission check for a user
+    area: roles
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Security.hasPermission", "Security.canReadInstance", "Security.canModifyInstance", "Security.canDeleteInstance"]}
+    notes: Asks the server directly. Behavioural tests with test accounts complement it (Phase 4).
+
+  - id: permissions.config
+    title: Permission configuration (permissions.xml)
+    area: roles
+    strategies:
+      - {provider: svn, coverage: full, requires: [".polarion/security/permissions.xml"]}
+    notes: Not exposed by REST or SOAP. Needs the opt-in SVN reader.
+
+  # ------------------------------------------------------------------ work items & fields
+  - id: workitems.query
+    title: Query Work Items (Lucene)
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/workitems"], probe: "GET /projects/{projectId}/workitems?page[size]=1"}
+      - {provider: soap, coverage: full, requires: ["Tracker.queryWorkItems"]}
+
+  - id: workitems.types
+    title: Work Item types
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/enumerations/{enumContext}/{enumName}/{targetType}"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.getAllEnumOptionsForId"]}
+      - {provider: svn, coverage: full, requires: [".polarion/tracker/fields/workitem-type-enum.xml"]}
+
+  - id: customfields.definitions
+    title: Custom field definitions
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/customfields/{resourceType}/{targetType}"]}
+      - {provider: soap, coverage: partial, requires: ["Tracker.getDefinedCustomFieldTypes"]}
+      - {provider: svn, coverage: full, requires: [".polarion/tracker/fields/"]}
+    notes: REST custom-field configuration exists from 2512. SOAP gives types and required flags but not every option.
+
+  - id: fields.metadata
+    title: Field metadata per resource type
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/actions/getFieldsMetadata"]}
+    notes: From 2512 (project level); per-item variants from 2606.
+
+  - id: enumerations.read
+    title: Read an enumeration
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/enumerations/{enumContext}/{enumName}/{targetType}"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.getAllEnumOptionsForId"]}
+      - {provider: svn, coverage: full, requires: [".polarion/tracker/fields/"]}
+
+  - id: enumerations.list
+    title: List all enumerations
+    area: workitems
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/enumerations"], probe: "GET /projects/{projectId}/enumerations?page[size]=1"}
+      - {provider: svn, coverage: full, requires: [".polarion/tracker/fields/"]}
+    notes: REST listing exists from 2512.
+
+  - id: fields.ui_rules
+    title: Read-only fields and form filters
+    area: workitems
+    strategies:
+      - {provider: svn, coverage: partial, requires: [".polarion/tracker/"]}
+    notes: UI-only settings; no API exposes them. Behaviour can only be confirmed in the browser (Phase 5).
+
+  - id: workitems.links
+    title: Work Item links and link roles
+    area: traceability
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/workitems/{workItemId}/linkedworkitems"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.queryWorkItems"]}
+
+  - id: workitems.backlinks
+    title: Back-linked Work Items
+    area: traceability
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/workitems/{workItemId}/backlinkedworkitems"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.getBackLinkedWorkitems"]}
+    notes: REST backlinks endpoint exists from 2512.
+
+  # ------------------------------------------------------------------ workflow
+  - id: workflow.item_actions
+    title: Workflow actions of a Work Item (available, required fields, roles, blocked reason)
+    area: workflow
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/workitems/{workItemId}/actions/getWorkflowActions"]}
+      - {provider: soap, coverage: partial, requires: ["Tracker.getAvailableActions", "Tracker.getUnavailableActions"]}
+
+  - id: workflow.definition
+    title: Workflow definitions (statuses, transitions, conditions, functions)
+    area: workflow
+    strategies:
+      - {provider: svn, coverage: full, requires: [".polarion/tracker/workflow/"]}
+    notes: Not exposed by REST or SOAP. Without SVN, transitions are only seen per item.
+
+  - id: workflow.execute
+    title: Execute a workflow action on a test Work Item
+    area: workflow
+    write: true
+    strategies:
+      - {provider: rest, coverage: full, requires: ["PATCH /projects/{projectId}/workitems/{workItemId}"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.performWorkflowAction"]}
+
+  # ------------------------------------------------------------------ documents
+  - id: documents.list
+    title: List Documents
+    area: documents
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/documents"], probe: "GET /projects/{projectId}/documents?page[size]=1"}
+      - {provider: soap, coverage: full, requires: ["Tracker.queryModules"]}
+    notes: REST listing exists from 2512.
+
+  - id: documents.read
+    title: Read a Document and its fields
+    area: documents
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/spaces/{spaceId}/documents/{documentName}"]}
+      - {provider: soap, coverage: full, requires: ["Tracker.getModuleByLocation"]}
+
+  - id: documents.structure
+    title: Document structure (parts, contained Work Items)
+    area: documents
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/spaces/{spaceId}/documents/{documentName}/parts"]}
+      - {provider: soap, coverage: partial, requires: ["Tracker.getModuleWorkItems"]}
+
+  - id: baselines.read
+    title: Baselines
+    area: documents
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Tracker.queryBaselines"]}
+    notes: Not in REST (REST guide, Limitations).
+
+  - id: history.read
+    title: Object history (revisions)
+    area: documents
+    strategies:
+      - {provider: soap, coverage: full, requires: ["Tracker.getRevisions"]}
+    notes: REST can read a given revision but cannot list history.
+
+  # ------------------------------------------------------------------ reports, pages, scripts
+  - id: pages.list
+    title: List pages (LiveReports / Info pages)
+    area: reports
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/pages"], probe: "GET /projects/{projectId}/pages?page[size]=1"}
+      - {provider: soap, coverage: partial, requires: ["Tracker.getWikiPages"]}
+    notes: REST page listing exists from 2512.
+
+  - id: pages.source
+    title: Page / widget / Velocity source
+    area: reports
+    strategies:
+      - {provider: svn, coverage: full, requires: [".polarion/pages/"]}
+
+  - id: scripts.source
+    title: Workflow scripts and Velocity form scripts
+    area: customization
+    strategies:
+      - {provider: svn, coverage: partial, requires: [".polarion/scripts/"]}
+    notes: Server-side `scripts/` folders on the file system are not reachable remotely.
+
+  # ------------------------------------------------------------------ testing
+  - id: testruns.read
+    title: Test Runs and records
+    area: traceability
+    strategies:
+      - {provider: rest, coverage: full, requires: ["GET /projects/{projectId}/testruns"], probe: "GET /projects/{projectId}/testruns?page[size]=1"}
+      - {provider: soap, coverage: full, requires: ["TestManagement.searchTestRuns"]}
