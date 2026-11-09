@@ -201,8 +201,9 @@ def _role_from_subject(subject: str, names: Names, ctx: Ctx) -> str | None:
     known = _known_in(subject, names.roles)
     if known:
         return known
-    m = re.search(rf"{_q('r')}\s+role\b", subject, re.I) or re.search(rf"\brole\s+(?:called|named)?\s*{_q('r')}\s*$", subject, re.I)
-    if m:
+    # "the role internal_reviewer" / "a user with the role internal_reviewer": the name FOLLOWS the word role
+    m = re.search(rf"\brole\s+(?:called|named)?\s*{_q('r')}\s*$", subject, re.I) or re.search(rf"{_q('r')}\s+role\b", subject, re.I)
+    if m and _clean_name(m.group("r")):
         return _clean_name(m.group("r"))
     cleaned = _clean_name(re.sub(r"^(?:users?|people|members?|everyone)\s+(?:with|in|having|of)\s+(?:the\s+)?", "", subject, flags=re.I))
     if cleaned and len(cleaned.split()) <= 5 and not re.match(r"^(?:there|this|that|the system|polarion|a user|any user)$", cleaned, re.I):
@@ -406,7 +407,9 @@ RULES = [rule_transition, rule_action_field, rule_missing_field_rejected, rule_f
 # ---------------------------------------------------------------- sentence handling
 def split_sentences(text: str) -> list[str]:
     out = []
-    for s in re.split(r"(?<=[.!?])\s+(?=[A-Z\"“'])|\n+", text):
+    # also split at list bullets ("- ", "* ", "•") that start a new sentence so bullet lists keep every item; drop heading lines
+    text = re.sub(r"(?m)^\s*#+\s+.*$", "", text)
+    for s in re.split(r"(?<=[.!?])\s+(?=[A-Z\"“'])|\s+[-*•▪●]\s+(?=[A-Z])|\n+", text):
         for part in re.split(r"\s*;\s*|\s*,\s*(?=but\b)|\s+(?=but\b)", s):
             if part.strip(" .,;"):
                 out.append(part.strip())

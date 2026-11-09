@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import uuid
 from datetime import datetime, timezone
@@ -35,6 +35,8 @@ def split_polarion_url(url: str) -> tuple[str, str | None]:
     v = (url or "").strip()
     if not v.lower().startswith(("http://", "https://")):
         raise ValueError("Base URL must start with http:// or https://")
+    if not urlparse(v).netloc:
+        raise ValueError("Base URL needs a server name, e.g. https://polarion.example.com/polarion")
     project = None
     m = _PROJECT_IN_URL.search(v.split("/polarion", 1)[1] if "/polarion" in v.lower() else "")
     if m:

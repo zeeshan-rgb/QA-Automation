@@ -13,6 +13,15 @@ $py = "D:\PolarionValidationStudio\venv\Scripts\python.exe"
 
 ---
 
+## 0. The one-command check
+
+```powershell
+qa check                                   # every scenario on mock servers (about 7 minutes)
+qa check --real-local --exe D:\PavsBuild\dist\PolarionValidationStudio   # plus the real local Polarion (no login) and the executables
+```
+
+It runs 46 scenarios over real HTTP against all five release profiles: connections and failures, every requirement file format, behavioural runs and production safety, roles, history, merge and TortoiseSVN hand-off, exports, secrets in logs and database, the GUI pages, the command line, the single-window behaviour, browser checks, the executables, and (with `--real-local`) your real repository read through svnlook. Each line says PASS or FAIL with the reason; any FAIL makes the command exit 1.
+
 ## 1. Automated tests (2 minutes)
 
 ```powershell

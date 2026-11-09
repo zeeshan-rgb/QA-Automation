@@ -402,6 +402,8 @@ def _join(*parts: str) -> str:
 
 
 def _is_local_host(base_url: str) -> bool:
+    """A Polarion on this computer on its normal port. A server on any other port (a test copy, a tunnel, a mock) is not
+    assumed to own the local repository folder: for that, set the Local repository folder explicitly."""
     from urllib.parse import urlparse
-    host = (urlparse(base_url).hostname or "").lower()
-    return host in ("localhost", "127.0.0.1", "::1")
+    u = urlparse(base_url)
+    return (u.hostname or "").lower() in ("localhost", "127.0.0.1", "::1") and u.port in (None, 80, 443)

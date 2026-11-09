@@ -89,10 +89,24 @@ def run_browser_checks(base_url: str, project_id: str, username: str | None, pas
                         and page.locator(PASS_FIELD).count() == 1
                     status = resp.status if resp else 0
                     ok = has_form and status < 400
+                    why = f"HTTP {status}, sign-in form {'found' if has_form else 'missing'}"
+                    evidence = [f"browser: {used}", f"page title: {page.title()!r}", f"url: {page.url}"]
+                    if not ok:
+                        try:                                           # what does the server's main page say instead?
+                            page.goto(f"{base}/", wait_until="load")
+                            title = page.title()
+                            evidence.append(f"main page title: {title!r}")
+                            if "activation" in title.lower() or "licen" in title.lower():
+                                why = "Polarion shows its activation / license page instead of the login form"
+                                evidence.append("Activate or renew the Polarion license, then run the browser checks again.")
+                        except PlaywrightError:
+                            pass
                     out.append(_result("B01", "Login page renders", TestStatus.PASS if ok else TestStatus.FAIL,
                                        "the login page loads with a username and a password field",
-                                       "login form present" if ok else f"HTTP {status}, sign-in form {'found' if has_form else 'missing'}",
-                                       [f"browser: {used}", f"page title: {page.title()!r}", f"url: {page.url}"]))
+                                       "login form present" if ok else why, evidence))
+                    if not ok:
+                        out += _blocked_rest("the login form is not available")
+                        return out
                 except PlaywrightError as exc:
                     out.append(_result("B01", "Login page renders", TestStatus.FAIL, "the login page loads",
                                        "the page could not be opened", [str(exc).splitlines()[0][:200], f"browser: {used}"]))

@@ -69,6 +69,14 @@ class RolesReader:
                 roles += parse_role_list(f[0], Scope.PROJECT, f[1])
                 col.used(ProviderKind.SVN)
                 got = True
+            # roles defined by the project itself (<project>/.polarion/security/project-roles.xml) add to the global ones
+            own = col.attempt("SVN project-level project-roles.xml",
+                              lambda: ctx.repo.file(Scope.PROJECT, ctx.project_id, "security/project-roles.xml"))
+            if own:
+                have = {r.id for r in roles if r.scope == Scope.PROJECT}
+                roles += [r for r in parse_role_list(own[0], Scope.PROJECT, own[1]) if r.id not in have]
+                col.used(ProviderKind.SVN)
+                got = True
         col.ok() if got else col.gap("Project roles", "SOAP project location or SVN reader not available",
                                      REMEDY_SOAP)
 

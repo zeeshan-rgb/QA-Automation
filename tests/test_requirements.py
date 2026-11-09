@@ -158,3 +158,25 @@ def test_conflicting_requirements_are_found():
     per = {r.id: generate_for_requirement(r).cases for r in reqs}
     found = find_conflicts(per, {r.id: r.label for r in reqs})
     assert found and found[0].kind == FindingKind.CONFLICT
+
+
+def test_role_name_after_the_word_role_without_inspected_names():
+    """Found by the end-to-end run: 'The role X cannot ...' produced the role 'The' when the role list was not known."""
+    from pavs.domain.requirements import Requirement
+    from pavs.engines.requirements.rules import generate_for_requirement
+    for sentence in ("The role internal_reviewer cannot delete Work Items.", "A user with the role internal_reviewer may not delete Work Items.",
+                     "Role internal_reviewer cannot delete Work Items.", "The internal_reviewer role cannot delete Work Items."):
+        g = generate_for_requirement(Requirement(external_id="", title="t", text=sentence))
+        assert [c.title for c in g.cases] == ["Role 'internal_reviewer' cannot delete Work Items"], sentence
+
+
+def test_markdown_bullet_lists_keep_every_item_and_headings_are_ignored():
+    from pavs.engines.requirements.importers import import_text
+    from pavs.engines.requirements.rules import generate_for_requirement
+    md = ("# Reqs\n- The role internal_reviewer cannot delete Work Items.\n"
+          "- Every Requirement must be linked to a Testcase.\n- The system should be fast.\n")
+    req = import_text(md, "x").requirements[0]
+    assert not req.text.startswith("#") and "Reqs" not in req.text
+    g = generate_for_requirement(req)
+    assert [c.title for c in g.cases] == ["Role 'internal_reviewer' cannot delete Work Items", "Every Requirement is linked to a Testcase"]
+    assert any(f.kind.value == "ambiguous" for f in g.findings)                       # 'fast' is still reported

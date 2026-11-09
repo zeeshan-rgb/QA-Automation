@@ -1,10 +1,10 @@
 """Connect & Test: enter the Polarion URL and credentials, pick a project, run the tests."""
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QInputDialog,
-                               QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+                               QBoxLayout, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
                                QPlainTextEdit, QProgressBar, QPushButton, QSplitter, QTabWidget,
                                QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
 
@@ -304,12 +304,36 @@ class ConnectTestPage(QWidget):
         lay.addWidget(heading("Connect & Test",
                               "Enter your Polarion address and credentials, pick a project, and run the tests. Read-only by default. "
                               "Only the optional Behavioural tests create temporary test data, and only in a test project you approve."))
-        top = QHBoxLayout()
-        top.addWidget(conn, 1)
-        top.addWidget(proj, 1)
-        lay.addLayout(top)
+        self._top = QBoxLayout(QBoxLayout.LeftToRight)
+        self._top.addWidget(conn, 1)
+        self._top.addWidget(proj, 1)
+        lay.addLayout(self._top)
         lay.addWidget(self.tabs, 1)
         self._set_project_enabled(False)
+
+    def _relayout(self) -> None:
+        """On a narrow window (or a high display scaling) the two panels stack instead of forcing a sideways scrollbar."""
+        parent = self.parentWidget()
+        avail = parent.width() if parent is not None else self.width()
+        want = QBoxLayout.TopToBottom if avail < 1060 else QBoxLayout.LeftToRight
+        if self._top.direction() != want:
+            self._top.setDirection(want)
+
+    def resizeEvent(self, event) -> None:
+        self._relayout()
+        super().resizeEvent(event)
+
+    def showEvent(self, event) -> None:
+        if self.parentWidget() is not None and not getattr(self, "_watching", False):
+            self.parentWidget().installEventFilter(self)      # the scroll area's viewport resizes without resizing this page
+            self._watching = True
+        self._relayout()
+        super().showEvent(event)
+
+    def eventFilter(self, obj, event) -> bool:
+        if event.type() == QEvent.Resize and obj is self.parentWidget():
+            self._relayout()
+        return False
 
     @staticmethod
     def _shrinkable(box: QComboBox) -> None:

@@ -25,7 +25,7 @@ class MergePage(QWidget):
         self.src_env, self.src_proj = QComboBox(), QComboBox()
         self.dst_env, self.dst_proj = QComboBox(), QComboBox()
         for box in (self.src_env, self.src_proj, self.dst_env, self.dst_proj):
-            box.setMinimumContentsLength(14)
+            box.setMinimumContentsLength(8)
             box.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.src_env.currentIndexChanged.connect(lambda _: self._fill_projects(self.src_env, self.src_proj))
         self.dst_env.currentIndexChanged.connect(lambda _: self._fill_projects(self.dst_env, self.dst_proj))
@@ -70,11 +70,13 @@ class MergePage(QWidget):
         self.btn_checkout.clicked.connect(self._checkout)
         self.btn_merge.clicked.connect(self._merge)
         self.btn_export.clicked.connect(self._export)
-        actions = QHBoxLayout()
-        for b in (self.btn_compare_ts, self.btn_diff, self.btn_log, self.btn_browse, self.btn_checkout, self.btn_merge):
-            actions.addWidget(b)
-        actions.addStretch(1)
-        actions.addWidget(self.btn_export)
+        actions = QGridLayout()                       # two rows, so the page still fits a narrow window
+        for i, b in enumerate((self.btn_compare_ts, self.btn_diff, self.btn_log, self.btn_browse)):
+            actions.addWidget(b, 0, i)
+        actions.addWidget(self.btn_checkout, 1, 0)
+        actions.addWidget(self.btn_merge, 1, 1)
+        actions.addWidget(self.btn_export, 1, 3)
+        actions.setColumnStretch(2, 1)
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(24, 20, 24, 20)

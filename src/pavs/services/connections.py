@@ -118,4 +118,5 @@ class ConnectionService:
 
 def _local_url(url: str) -> bool:
     from urllib.parse import urlparse
-    return (urlparse(url).hostname or "").lower() in ("localhost", "127.0.0.1", "::1")
+    u = urlparse(url)
+    return (u.hostname or "").lower() in ("localhost", "127.0.0.1", "::1") and u.port in (None, 80, 443)

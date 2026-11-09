@@ -26,6 +26,7 @@ def live_mock():
     thread.start()
     yield f"http://127.0.0.1:{httpd.server_port}/polarion"
     httpd.shutdown()
+    httpd.server_close()
     thread.join(timeout=5)
 
 
@@ -97,3 +98,32 @@ def test_browser_checks_inside_a_run(live_mock, tmp_path):
     assert ids["B01"].status == S.PASS and ids["B02"].status == S.PASS
     assert "admin-test-pw" not in str(run.model_dump())
     c.close()
+
+
+@needs_browser
+def test_a_server_without_a_login_form_blocks_the_rest_and_names_an_activation_page():
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class Activation(BaseHTTPRequestHandler):
+        def do_GET(self):
+            code, body = (404, b"<html><title>HTTP Status 404</title></html>") if self.path.endswith("/login") \
+                else (200, b"<html><head><title>Polarion Activation</title></head><body>activate</body></html>")
+            self.send_response(code)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *a):
+            pass
+
+    srv = HTTPServer(("127.0.0.1", 0), Activation)
+    t = threading.Thread(target=srv.serve_forever, daemon=True)
+    t.start()
+    try:
+        res = by_id(browser.run_browser_checks(f"http://127.0.0.1:{srv.server_port}/polarion", "p", "admin", "pw"))
+    finally:
+        srv.shutdown()
+        srv.server_close()
+    assert res["B01"].status == S.FAIL and "activation" in res["B01"].actual.lower()
+    assert res["B02"].status == S.BLOCKED and res["B03"].status == S.BLOCKED and res["B04"].status == S.BLOCKED
+    assert "B00" not in res                                                           # no stray 20-second timeout error

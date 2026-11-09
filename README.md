@@ -59,7 +59,8 @@ How it is kept safe (each rule is enforced in code and covered by tests):
 - **Regression comparison:** after each run the result line shows how many checks got worse or were fixed since the previous run of the same project; *History > Compare with previous run* lists every difference, worst first.
 - **Merge & Templates with TortoiseSVN** (own page): pick a source and a target project (same server or two servers), and the tool compares their configuration trees (`<project>/.polarion`: workflows, fields, roles, pages, widget templates, scripts) **read-only**, lists what is new / changed / only in the target, and checks every incoming file: well-formed XML, and the script and Velocity rules against the **target** Polarion release. Then buttons start TortoiseSVN's own dialogs: compare URLs, diff of the selected file, log, repository browser, **checkout of the target** and the **merge wizard** on your working copy. The tool never commits or merges by itself, never puts a password on a command line (TortoiseSVN uses its own cached sign-in), and the checkout/merge hand-offs need the Lead role (Admin for a production environment). It is a two-way comparison; TortoiseSVN's merge uses the history to find real conflicts. Needs TortoiseSVN installed (found automatically).
 - **Browser checks** (tick *Browser checks*, optional): drives your installed Edge or Chrome through Playwright (`pip install playwright`, no download): login page renders, sign-in works, the project page opens, no JavaScript errors. Nothing is clicked except the sign-in. Without Playwright or a browser the checks say BLOCKED and why.
-- **Local repository reader:** when Polarion runs on the same computer and `/repo` refuses the login, the configuration files are read straight from the repository folder (for example `E:\data\svnepo`) with the `svnlook` that ships with Polarion. Read-only, no repository login needed. Found automatically for `localhost`; for another folder use *Local repository folder* on the Connect page. A remote server still needs a working `/repo` login (*Repository user / password*).
+- **Local repository reader:** when Polarion runs on the same computer and `/repo` refuses the login, the configuration files are read straight from the repository folder (for example `E:\data\svn
+epo`) with the `svnlook` that ships with Polarion. Read-only, no repository login needed. Found automatically for `localhost`; for another folder use *Local repository folder* on the Connect page. A remote server still needs a working `/repo` login (*Repository user / password*).
 - **JWT / Bearer tokens:** paste a JWT in *Access token*; it is used for REST. SOAP cannot use a JWT, so add the password for SOAP.
 - **PDF reports** besides Excel, HTML and CSV. Every export scrubs secrets and neutralises spreadsheet formulas.
 - **Application roles** (Viewer, Tester, Lead, Admin; selector at the bottom of the sidebar): Viewer looks at saved results; Tester connects and runs read-only tests; Lead also runs behavioural tests, approves test projects and starts TortoiseSVN checkout/merge; Admin also manages production environments, deletes environments and sets an optional role passphrase (needed to raise the role). A guardrail for a desktop tool, not a security boundary: Polarion's own permissions and the Write Guard are unchanged.
@@ -122,6 +123,10 @@ python -m mock_polarion.serve 2410-rest-off --port 8810
 ```
 
 Add an environment with URL `http://127.0.0.1:8810/polarion`, authentication "Username + password", user `admin`, password `admin-test-pw` (mock-only fake values). Profiles: `2410-rest-off`, `2410`, `2506`, `2512`, `2606`.
+
+### Check everything on this machine
+
+`qa check` runs 46 end-to-end scenarios (all release profiles, GUI, CLI, executables, security, browser checks); see [docs/TESTING-GUIDE.md](docs/TESTING-GUIDE.md).
 
 ### Build the executables
 

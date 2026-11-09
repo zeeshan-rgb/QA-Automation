@@ -93,6 +93,8 @@ def split_criteria(text: str) -> tuple[str, list[str]]:
             b = BULLET.match(line)
             criteria.append(_clean(b.group("rest") if b else line))
             continue
+        if re.match(r"^\s*#{1,6}\s+\S", line):
+            continue                                    # a Markdown heading names a section, it is not a requirement sentence
         body.append(line.strip())
     return _clean(" ".join(body)), criteria
 

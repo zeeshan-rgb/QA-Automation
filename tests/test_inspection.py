@@ -159,3 +159,35 @@ def test_other_releases_complete_with_all_providers(mock_server, profile):
     bad = {x.area: x.errors for x in snap.sections if x.status not in ("complete",)}
     assert not bad, bad
     s.close()
+
+
+def test_roles_defined_by_the_project_itself_are_known():
+    """Found on a real 2606 project: roles listed in <project>/.polarion/security/project-roles.xml were ignored, so an
+    assignment to such a role was reported as 'not a defined project role'."""
+    from types import SimpleNamespace
+    from pavs.domain.errors import NotFound
+    from pavs.engines.inspection.readers_roles import RolesReader
+    from pavs.engines.inspection.repo import RepoConfig
+
+    files = {
+        ".polarion/projects.xml": '<projects><project id="Vision" path="/Vision"/></projects>',
+        ".polarion/security/roles.xml": "<roles><role>admin</role><role>user</role></roles>",
+        ".polarion/security/project-roles.xml": "<roles><role>project_user</role><role>project_admin</role></roles>",
+        "Vision/.polarion/security/project-roles.xml": "<roles><role>system_Engineer</role></roles>",
+        "Vision/.polarion/security/user-roles.xml": '<user-roles><user name="admin"><role name="system_Engineer"/></user></user-roles>',
+    }
+
+    class FakeSvn:
+        def read_text(self, path):
+            if path not in files:
+                raise NotFound(404, "Not Found", path)
+            return files[path]
+
+        def list_dir(self, path):
+            raise NotFound(404, "Not Found", path)
+
+    ctx = SimpleNamespace(soap=None, rest=None, repo=RepoConfig(FakeSvn()), project_id="Vision", shared={}, caps={},
+                          progress=lambda m: None, usable=lambda c: False, rest_has=lambda s: False)
+    section = RolesReader().read(ctx)
+    roles = {(r["scope"], r["id"]) for r in section.items["roles"]}
+    assert ("project", "system_Engineer") in roles and ("project", "project_admin") in roles

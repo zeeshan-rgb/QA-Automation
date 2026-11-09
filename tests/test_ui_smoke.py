@@ -4,6 +4,8 @@ import os
 import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+if os.name == "nt":                          # offscreen Qt has no fonts of its own: without these, text widths (and layouts) are wrong
+    os.environ.setdefault("QT_QPA_FONTDIR", "C:/Windows/Fonts")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
 from pavs.app import build_context  # noqa: E402
@@ -232,4 +234,23 @@ def test_history_tab_clear_buttons_update_the_list(qapp, tmp_path, mock_server):
     page._history_action(lambda: ctx.testing.clear_history())
     assert page.history.rowCount() == 0 and "2 saved run" in page.counts.text()
     assert win.inspector.btn_clear.text() == "Clear snapshots"
+    ctx.close()
+
+
+def test_no_page_needs_a_sideways_scrollbar_on_a_normal_window(qapp, tmp_path, mock_server):
+    """The Connect page stacks its two panels on a narrow window; no page may overflow at 1100 px wide or more."""
+    from pavs.ui.main_window import MainWindow
+    _, wsgi = mock_server("2606")
+    ctx = build_context(db_path=tmp_path / "w.sqlite3", vault_backend=MemoryBackend(), http_transport=wsgi, log_to_file=False)
+    ctx.connections.quick_connect("https://mock.test/polarion", "admin", "admin-test-pw", token="test-token-admin")
+    win = MainWindow(ctx)
+    for width, height in ((1100, 700), (1280, 720), (1920, 1000)):
+        win.resize(width, height)
+        win.show()
+        qapp.processEvents()
+        for row in range(win.nav.count()):
+            win.nav.setCurrentRow(row)
+            for _ in range(4):                                    # a re-layout can need a few event rounds to settle
+                qapp.processEvents()
+            assert win.stack.currentWidget().horizontalScrollBar().maximum() == 0, f"{win.nav.item(row).text()} at {width}px"
     ctx.close()

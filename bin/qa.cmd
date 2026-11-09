@@ -20,6 +20,7 @@ if /i "%CMD%"=="test"  goto test
 if /i "%CMD%"=="mock"  goto mock
 if /i "%CMD%"=="cli"   goto cli
 if /i "%CMD%"=="exe"   goto exe
+if /i "%CMD%"=="check" goto check
 goto help
 
 :start
@@ -57,6 +58,14 @@ if "%~1"=="" (
 "%PY%" -m pavs.cli %1 %2 %3 %4 %5 %6 %7 %8 %9
 exit /b %ERRORLEVEL%
 
+:check
+pushd "%ROOT%"
+shift
+"%PY%" tools\e2e_check.py %1 %2 %3 %4 %5 %6
+set "RC=%ERRORLEVEL%"
+popd
+exit /b %RC%
+
 :exe
 start "" "D:\PavsBuild\dist\PolarionValidationStudio\PolarionValidationStudio.exe"
 exit /b 0
@@ -69,5 +78,6 @@ echo   qa mock [profile] [port]   start the fake Polarion (default 2606, port 88
 echo   qa test               run the automated self-checks (about a minute; touches no real server)
 echo   qa cli ...            command line tool, e.g.  qa cli run --url URL --project ID --out report.pdf
 echo   qa cli                with nothing after it: shows the command line help
+echo   qa check              full end-to-end check on this machine (mock servers; add --real-local --exe D:\PavsBuild\dist\PolarionValidationStudio)
 echo   qa exe                open the built executable
 exit /b 0

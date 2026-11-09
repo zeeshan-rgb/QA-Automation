@@ -116,3 +116,15 @@ def test_a_bad_local_folder_is_explained_and_the_http_result_is_kept(mock_ctx, t
                                              svn_password="wrong", local_repo=str(tmp_path))
     svns = [p for p in out.profile.providers if p.kind == ProviderKind.SVN]
     assert len(svns) == 1 and svns[0].state == ProviderState.AUTH_FAILED
+
+
+@needs_svn
+def test_a_server_on_a_non_default_port_never_borrows_the_local_repository(mock_ctx, repo, monkeypatch):
+    """A mock, tunnel or test copy on 127.0.0.1:8810 must not silently show the real local repository's files."""
+    monkeypatch.setattr(connection, "find_local_repository", lambda: repo)
+    out = mock_ctx.connections.quick_connect("http://127.0.0.1:8810/polarion", "admin", "admin-test-pw",
+                                             svn_user="admin", svn_password="wrong-repository-password")
+    assert out.profile.provider(ProviderKind.SVN).state == ProviderState.AUTH_FAILED
+    out = mock_ctx.connections.quick_connect("http://127.0.0.1:8810/polarion", "admin", "admin-test-pw",
+                                             svn_user="admin", svn_password="wrong-repository-password", local_repo=repo)
+    assert out.profile.provider(ProviderKind.SVN).state == ProviderState.AUTHENTICATED       # explicit choice is honoured
