@@ -753,6 +753,25 @@ def single_instance_processes():
         shutil.rmtree(data, ignore_errors=True)
 
 
+@scenario("GUI: three launches at the same instant open exactly one window; a slow first start is still found")
+def single_instance_race():
+    data = Path(tempfile.mkdtemp(prefix="pavs-race-"))
+    env = dict(os.environ, PAVS_DATA_DIR=str(data), QT_QPA_PLATFORM="offscreen", PYTHONPATH=f"{ROOT / 'src'};{ROOT}")
+    procs = []
+    try:
+        for _ in range(3):
+            procs.append(subprocess.Popen([sys.executable, "-m", "pavs"], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
+        time.sleep(15)
+        alive = [p for p in procs if p.poll() is None]
+        check(len(alive) == 1, f"{len(alive)} windows are open, expected exactly 1")
+        check(all(p.returncode == 0 for p in procs if p.poll() is not None), "the others must exit cleanly with 0")
+    finally:
+        for p in procs:
+            if p.poll() is None:
+                p.kill()
+        shutil.rmtree(data, ignore_errors=True)
+
+
 # =====================================================================================================================
 # 6. CLI (real subprocesses against a live mock) and the launcher
 # =====================================================================================================================

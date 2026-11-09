@@ -254,3 +254,33 @@ def test_no_page_needs_a_sideways_scrollbar_on_a_normal_window(qapp, tmp_path, m
                 qapp.processEvents()
             assert win.stack.currentWidget().horizontalScrollBar().maximum() == 0, f"{win.nav.item(row).text()} at {width}px"
     ctx.close()
+
+
+def test_only_one_launch_can_become_the_main_instance(qapp, tmp_path):
+    """The first launch claims the name immediately (before the slow start-up), so two quick launches cannot both open."""
+    import os
+    import subprocess
+    import sys
+    import time
+    from pathlib import Path
+    from pavs.ui import single_instance as si
+    name = si.instance_name(str(tmp_path / "race"))
+    first, primary1 = si.acquire(name, lambda: None)
+    assert primary1 and first is not None
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    code = ("import sys; from PySide6.QtWidgets import QApplication; from pavs.ui import single_instance as si; "
+            f"app = QApplication([]); claim, primary = si.acquire({name!r}, lambda: None); sys.exit(0 if not primary else 3)")
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=src)
+    child = subprocess.Popen([sys.executable, "-c", code], env=env)               # a second launch is another process
+    for _ in range(800):
+        qapp.processEvents()
+        if child.poll() is not None:
+            break
+        time.sleep(0.01)
+    assert child.wait(10) == 0                                    # it asked the first one to show itself and left
+    first.server.close()
+    first.lock.unlock()
+    third, primary3 = si.acquire(name, lambda: None)             # the first one is gone: the name is free again
+    assert primary3 and third is not None
+    third.server.close()
+    third.lock.unlock()

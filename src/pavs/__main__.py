@@ -23,16 +23,18 @@ def main(argv: list[str] | None = None) -> int:
     app = QApplication([sys.argv[0], *qt_args])
     app.setApplicationName(APP_NAME)
     app.setOrganizationName("PolarionValidationStudio")
-    name = single_instance.instance_name()
-    if not args.new and single_instance.forward_to_running(name):
-        return 0                                             # the open window was brought forward; nothing else to do
+    holder: dict = {}                                        # the window does not exist yet while the server is already listening
+    server = None
+    if not args.new:                                         # an explicit extra window never takes over the "main" role
+        server, primary = single_instance.acquire(single_instance.instance_name(),
+                                                  lambda: holder["win"].bring_to_front() if "win" in holder else None)
+        if not primary:
+            return 0                                         # the open window was brought forward; nothing else to do
     apply_theme(app)
     ctx = build_context()
     win = MainWindow(ctx)
+    holder["win"] = win
     win.show()
-    server = None
-    if not args.new:                                         # an explicit extra window never takes over the "main" role
-        server = single_instance.listen(name, win.bring_to_front)
     code = app.exec()
     del server
     return code

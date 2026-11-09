@@ -6,6 +6,7 @@ data folder, so a test copy with its own PAVS_DATA_DIR never collides with the r
 from __future__ import annotations
 
 import hashlib
+import time
 from typing import Callable
 
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
@@ -56,3 +57,56 @@ def listen(name: str, on_raise: Callable[[], None]) -> QLocalServer | None:
 
     server.newConnection.connect(handle)
     return server
+
+
+class Claim:
+    """Holds the lock file and the listening server for as long as this instance lives."""
+
+    def __init__(self, lock, server) -> None:
+        self.lock = lock
+        self.server = server
+
+
+def acquire(name: str, on_raise: Callable[[], None]) -> tuple[Claim | None, bool]:
+    """(claim, is_primary). The FIRST launch takes an atomic lock file before the slow start-up, so two launches at the same
+    moment cannot both open a window (Windows lets several servers listen on one pipe name, so listening alone is not a lock).
+    is_primary False = another copy answered and was asked to show itself: this launch should exit."""
+    from PySide6.QtCore import QDir, QLockFile
+    lock = QLockFile(QDir.temp().absoluteFilePath(f"{name}.lock"))
+    lock.setStaleLockTime(0)                              # a lock whose owner process is gone is stale at once
+    for attempt in range(2):
+        if lock.tryLock(0):
+            QLocalServer.removeServer(name)
+            server = QLocalServer()
+            if server.listen(name):
+                _wire(server, on_raise)
+            else:
+                server = None
+            return Claim(lock, server), True
+        # somebody holds the lock: give a copy that is still starting a moment to begin listening, then ask it to show itself
+        for _ in range(15):
+            if forward_to_running(name):
+                return None, False
+            time.sleep(0.2)
+        lock.removeStaleLockFile()                        # nobody answered: the owner crashed; try once more
+    return None, True                                     # could not decide: carry on as an ordinary window
+
+
+def _wire(server: QLocalServer, on_raise: Callable[[], None]) -> None:
+    def handle() -> None:
+        conn = server.nextPendingConnection()
+        if conn is None:
+            return
+
+        def read(c=conn) -> None:
+            if c.bytesAvailable():
+                c.readAll()
+                on_raise()
+                c.write(b"ok")
+                c.flush()
+
+        conn.readyRead.connect(read)
+        conn.disconnected.connect(conn.deleteLater)
+        read()
+
+    server.newConnection.connect(handle)
