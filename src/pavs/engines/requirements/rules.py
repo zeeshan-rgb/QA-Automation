@@ -126,6 +126,8 @@ def _type_in(sentence: str, names: Names, ctx: Ctx) -> str | None:
 
 
 def _object_in(clause: str, ctx: Ctx) -> tuple[str, str]:
+    # "comment on Work Items" uses comment as a VERB: the object is what follows, not Comment
+    clause = re.sub(r"\bcomment(?:s|ing)?\s+on\b", " ", clause, flags=re.I)
     for rx, perm_obj, label in OBJECT_WORDS:
         if re.search(rf"\b(?:{rx})\b", clause, re.I):
             return perm_obj, label
@@ -141,6 +143,9 @@ def _split_list(s: str) -> list[str]:
 
 # ---------------------------------------------------------------- rules
 def rule_permission(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | None:
+    # "can neither modify nor delete" is a NEGATIVE statement: read as a positive one it inverts the requirement
+    sentence = re.sub(r"\b(?:can|may|could|is\s+able\s+to)\s+neither\b", "cannot", sentence, flags=re.I)
+    sentence = re.sub(r"\bnor\b", "and", sentence, flags=re.I) if re.search(r"\bcannot\b", sentence, re.I) else sentence
     neg = NEG_RE.search(sentence)
     pos = None if neg else POS_RE.search(sentence)
     m = neg or pos
@@ -152,8 +157,10 @@ def rule_permission(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | None:
     if not verbs:
         return None
     # status-transition sentences are handled by rule_transition
-    if re.search(r"\bfrom\b.+\bto\b", tail, re.I) and re.search(r"\b(move|transition|go|be\s+set|change)\b", tail, re.I):
+    if re.search(r"\bfrom\b.+\bto\b", tail, re.I) and re.search(r"\b(move|transition|go|be\s+set|change|re-?open\w*|clos\w+|re-?activat\w+|re-?start\w*)\b", tail, re.I):
         return None
+    if re.search(r"\bfrom\b\s+\S+.*\bto\b\s+\S+", tail, re.I) and not re.search(r"\b(access|read|view|see|download|copy|export)\b", tail, re.I):
+        return None                 # "Defects can be reopened from Closed to Open": statuses, not a permission on 'Open'
     subject = sentence[:m.start()].strip()
     role = _role_from_subject(subject, names, ctx)
     if not role:
@@ -211,7 +218,14 @@ def _role_from_subject(subject: str, names: Names, ctx: Ctx) -> str | None:
     return None
 
 
+NEG_EXISTENCE = re.compile(r"\b(?:must|should|shall|can|may|will)\s+not\s+(?=exist|be\s+(?:defined|available|present|configured|created))"
+                           r"|\b(?:does|do|is|are)\s+not\s+(?=exist|(?:defined|available|present|configured|created))", re.I)
+
+
 def rule_role_exists(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | None:
+    negated = bool(NEG_EXISTENCE.search(sentence))
+    if negated:                       # "The role X must not exist": same shape as the positive form, opposite expectation
+        sentence = NEG_EXISTENCE.sub("", sentence)
     m = re.search(rf"\b(?:create|add|define|set\s*up|configure|provide|introduce|have|exist)\b[^.]*?\brole\s+(?:called|named)?\s*{_q('r')}{STOP_TAIL}", sentence, re.I) \
         or re.search(rf"\brole\s+(?:called|named)\s*{_q('r')}{STOP_TAIL}", sentence, re.I) \
         or re.search(rf"\b(?:there\s+(?:is|should\s+be|must\s+be))\s+(?:a|an)?\s*{_q('r')}\s+role\b", sentence, re.I) \
@@ -224,6 +238,9 @@ def rule_role_exists(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | None:
         return None
     role = _clean_name(m.group("r"))
     ctx.role = role
+    if negated:
+        return [Hit(CheckSpec(kind=CheckKind.ROLE_EXISTS, expect=Expectation.ABSENT, target={"role": role}),
+                    f"Role '{role}' does not exist", "role_exists", Polarity.NEGATIVE)]
     return [Hit(CheckSpec(kind=CheckKind.ROLE_EXISTS, expect=Expectation.PRESENT, target={"role": role}),
                 f"Role '{role}' exists", "role_exists")]
 
@@ -341,10 +358,13 @@ def rule_status_exists(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | Non
 
 def rule_link_role(sentence: str, ctx: Ctx, names: Names) -> list[Hit] | None:
     m = re.search(rf"\blink\s+role\s+(?:called|named)?\s*{_q('l')}{STOP_TAIL}", sentence, re.I) \
-        or re.search(rf"\b(?:link(?:ed)?|trac(?:e|ed))\s+(?:to|with)\b.*?\b(?:using|via|with|by)\s+(?:the\s+)?(?:link\s+)?(?:role\s+)?{_q('l')}\s+(?:link|role)", sentence, re.I)
+        or re.search(rf"\b(?:link(?:ed)?|trac(?:e|ed))\s+(?:to|with)\b.*?\b(?:using|via|with|by)\s+(?:the\s+)?(?:link\s+)?role\s+(?:called\s+|named\s+)?{_q('l')}{STOP_TAIL}", sentence, re.I) \
+        or re.search(rf"\b(?:link(?:ed)?|trac(?:e|ed))\s+(?:to|with)\b.*?\b(?:using|via|with|by)\s+(?:the\s+)?(?:link\s+)?{_q('l')}\s+(?:link|role)", sentence, re.I)
     if not m:
         return None
     lr = _clean_name(m.group("l"))
+    if not lr or lr.lower() in ("the", "a", "an", "this", "that"):
+        return None
     return [Hit(CheckSpec(kind=CheckKind.LINK_ROLE_EXISTS, expect=Expectation.PRESENT, target={"link_role": lr}),
                 f"Link role '{lr}' exists", "link_role_exists")]
 
@@ -441,11 +461,21 @@ def generate_for_requirement(req: Requirement, names: Names | None = None) -> Ge
     for criterion, sentence in sources:
         if len(sentence.split()) < 3:
             continue
+        if EXCEPTION_RE.search(sentence) and PERMISSION_WORDS.search(sentence):
+            # "Everyone except X can ..." reads like "X can ..." to a pattern matcher: the OPPOSITE of the requirement.
+            findings.append(Finding(requirement_id=req.id, kind=FindingKind.NOT_AUTOMATABLE,
+                                    message=f"An exception ('except', 'other than') changes who is allowed; no test was generated "
+                                            f"so it cannot be inverted by mistake. State it per role: \"{sentence[:140]}\""))
+            continue
         hits = None
         for rule in RULES:
             hits = rule(sentence, ctx, names)
             if hits:
                 break
+        if hits and ONLY_RE.search(sentence) and any(h.check.kind == CheckKind.PERMISSION for h in hits):
+            findings.append(Finding(requirement_id=req.id, kind=FindingKind.AMBIGUOUS,
+                                    message="'Only' means every OTHER role must NOT have this permission. Only the part that the named "
+                                            f"role has it is tested; add one negative statement per other role: \"{sentence[:120]}\""))
         if not hits:
             if VAGUE.search(sentence):
                 continue            # reported as "ambiguous" below
@@ -480,9 +510,15 @@ def generate_for_requirement(req: Requirement, names: Names | None = None) -> Ge
     return GenerationResult(cases, findings)
 
 
+EXCEPTION_RE = re.compile(r"\b(?:except(?:\s+for)?|other\s+than|apart\s+from|besides|excluding|with\s+the\s+exception\s+of)\b", re.I)
+PERMISSION_WORDS = re.compile(r"\b(?:can|cannot|may|must|should|shall|allowed|able)\b", re.I)
+ONLY_RE = re.compile(r"^\s*only\b|\bonly\s+(?:the\s+)?(?:role\s+|roles\s+|users?\s+)?[\w\- ,]+?\s+(?:can|may|are\s+allowed|is\s+allowed)\b", re.I)
+
+
 def _is_context_sentence(sentence: str) -> bool:
     """Explanatory sentences without any normative word are not reported as unresolved."""
-    return not re.search(r"\b(must|shall|should|can|cannot|may|will|required|mandatory|need|needs)\b", sentence, re.I)
+    return not re.search(r"\b(must|shall|should|can|cannot|may|will|required|requires?|requiring|mandatory|need|needs|"
+                         r"has\s+to|have\s+to|ensure|ensures|allowed|forbidden|prohibited|only)\b", sentence, re.I)
 
 
 def find_conflicts(per_req: dict[str, list[TestCase]], labels: dict[str, str]) -> list[Finding]:

@@ -368,7 +368,10 @@ class MockPolarion:
                 f'unresolvable="false"><id>{pid}</id><name>{name}</name></{op}Return>'
                 for pid, name in self.p.projects)
             return _envelope(sid, f'<{op}Response xmlns="{ns}">{items}</{op}Response>')
-        out = self._soap_config(op, args)
+        try:
+            out = self._soap_config(op, args)
+        except _SoapUserFault as exc:
+            return _fault("soapenv:Server.userException", str(exc))
         if out is not None:
             return _envelope(sid, f'<{op}Response xmlns="{ns}">{out}</{op}Response>')
         return _envelope(sid, f'<{op}Response xmlns="{ns}"/>')
@@ -379,7 +382,10 @@ class MockPolarion:
         if op == "getProject":
             pid = args.get("projectID", "")
             return (f'<{R} uri="subterra:data-service:objects:/default/{pid}${{Project}}{pid}" '
-                    f'unresolvable="false"><id>{pid}</id><location>default:/{pid}</location></{R}>')
+                    f'unresolvable="false"><id>{pid}</id><location>default:/{pid}/.polarion/polarion-project.xml</location></{R}>')
+        if op in ("getContextRoles", "getRolesForUser") and "/.polarion/" in (args.get("location") or "x"):
+            # real 2606: only the project FOLDER is a valid context, not the descriptor file Project.location returns
+            raise _SoapUserFault("com.polarion.alm.ws.WebserviceException: Location is not a valid context (Project, ProjectGroup)")
         if op == "getContextRoles":
             return "".join(f"<{R}>{r}</{R}>" for r in C.project_roles())
         if op == "getProjectUsers":
@@ -527,6 +533,10 @@ def _envelope(sid: str, body: str) -> str:
             '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">'
             f'<soapenv:Header><ns1:sessionID xmlns:ns1="{SESSION_NS}">{sid}</ns1:sessionID></soapenv:Header>'
             f'<soapenv:Body>{body}</soapenv:Body></soapenv:Envelope>')
+
+
+class _SoapUserFault(Exception):
+    """A SOAP user exception like the ones the real server raises for a bad argument."""
 
 
 def _fault(code: str, msg: str) -> str:

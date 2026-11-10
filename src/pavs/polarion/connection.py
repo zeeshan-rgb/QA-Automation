@@ -17,7 +17,7 @@ from ..domain.errors import AuthenticationFailed, PavsError, PolarionApiError
 from ..domain.models import (CapabilityRecord, Credentials, Environment, ProviderStatus,
                              ServerProfile, UserInfo)
 from ..infra.logging_setup import get_logger
-from ..infra.redaction import SecretRegistry
+from ..infra.redaction import SecretRegistry, scrub
 from . import discovery
 from .adapters import AdapterManager, VersionAdapter
 from .auth import AuthPlan, plan_auth
@@ -100,6 +100,16 @@ class ConnectionManager:
             profile.reachable = resp.status_code < 500
             if resp.status_code >= 400:
                 profile.warnings.append(f"Base URL answered HTTP {resp.status_code}.")
+            location = resp.headers.get("location", "")
+            if 300 <= resp.status_code < 400 and location:
+                # Typically http -> https or a different host name. Redirects are not followed (credentials must only go where
+                # the person pointed us), so say exactly what to enter instead of reporting "REST is switched off".
+                target = scrub(location) or location
+                msg = f"The server redirects this address to {target}. Use that address (for example https:// instead of http://)."
+                profile.errors.append(msg)
+                for kind in env.providers_enabled:
+                    profile.providers.append(ProviderStatus(kind=kind, state=ProviderState.UNREACHABLE, detail=msg))
+                return
         except PavsError as exc:
             profile.reachable = False
             profile.errors.append(f"Server not reachable: {exc}")
@@ -247,6 +257,13 @@ class ConnectionManager:
             profile.providers.append(ProviderStatus(kind=ProviderKind.SOAP, state=ProviderState.AUTH_FAILED,
                                                     detail=str(exc)))
             return ProviderState.AUTH_FAILED
+        def sign_in_again() -> None:
+            if plan.soap_token:
+                soap.login_token(plan.soap_token)
+            else:
+                soap.login_password(plan.soap_user or "", plan.soap_password or "")
+                soap.logged_in_user = plan.soap_user
+        soap.set_reauth(sign_in_again)
         s.soap = soap
         how = "token" if plan.soap_token else "password"
         profile.providers.append(ProviderStatus(kind=ProviderKind.SOAP, state=ProviderState.AUTHENTICATED,

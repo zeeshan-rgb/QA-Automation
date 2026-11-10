@@ -1,13 +1,14 @@
 """Documents (LiveDocs), document types/statuses, and pages."""
 from __future__ import annotations
 
-from ...domain.config import DocumentInfo, PageInfo
+from ...domain.config import DocumentInfo, PageInfo, Scope
 from ...domain.enums import ProviderKind
 from ...polarion.soap.client import as_list
 from .base import Collector, InspectionContext, first_text
 from .enums import read_enum
 
 MAX_DOCUMENTS = 2000
+MAX_PAGES_FROM_REPO = 1000
 
 
 class DocumentsReader:
@@ -101,6 +102,23 @@ class PagesReader:
                 col.used(ProviderKind.SOAP)
                 col.ok()
                 col.note("SOAP lists pages per wiki space; LiveReport pages may be missing on older releases.")
+        if ctx.repo is not None and not any(p.kind == "page" for p in pages):
+            # Rich Pages / LiveReports live in <project>/.polarion/pages/spaces/<space>/<page>/page.xml. SOAP does NOT list them
+            # (verified on a real 2606 project: SOAP returned 0 pages while the repository holds several).
+            base = ctx.repo.base(Scope.PROJECT, ctx.project_id)
+            found = 0
+            for space in [n.rstrip("/") for n in ctx.repo.list(f"{base}/pages/spaces") if n.endswith("/")] if base else []:
+                for page in [n.rstrip("/") for n in ctx.repo.list(f"{base}/pages/spaces/{space}") if n.endswith("/")]:
+                    if found >= MAX_PAGES_FROM_REPO:
+                        break
+                    pages.append(PageInfo(space=space, name=page, title=page, kind="repository page"))
+                    found += 1
+            if found:
+                col.used(ProviderKind.SVN)
+                col.ok()
+        elif ctx.repo is None and ctx.rest is None and not pages:
+            col.gap("Rich Pages and LiveReports", "SOAP lists only legacy Wiki pages, so Pages built in the Pages perspective are not seen",
+                    "Enable the read-only repository reader, or use REST on a release that lists pages")
         if not pages and not col.result.errors and ctx.rest is None and ctx.soap is None:
             col.gap("Pages", "needs REST (2512+) or SOAP")
         col.result.put("pages", sorted(pages, key=lambda p: (p.space, p.name)))

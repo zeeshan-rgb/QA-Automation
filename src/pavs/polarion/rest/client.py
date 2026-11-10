@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from typing import Any, Iterator
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import httpx
 
@@ -99,8 +99,24 @@ class RestClient:
                 if max_items is not None and seen >= max_items:
                     return
             nxt = (body.get("links") or {}).get("next")
-            url = urljoin(self.url(path), nxt) if nxt else None
+            if nxt:
+                target = urljoin(self.url(path), nxt)
+                if self._same_origin(target):
+                    url = target
+                else:
+                    # A server (or proxy) naming ANOTHER host in links.next must never receive our bearer token: ask the
+                    # configured server for the next page number instead of following the foreign address.
+                    query["page[number]"] = int(query.get("page[number]", 1)) + 1
+                    url = self.url(path)
+                    first = True
+                    continue
+            else:
+                url = None
             first = False
+
+    def _same_origin(self, url: str) -> bool:
+        a, b = urlparse(url), urlparse(self.root)
+        return (a.scheme, a.netloc.lower()) == (b.scheme, b.netloc.lower())
 
     def probe(self, path: str, params: Any = None) -> httpx.Response:
         """GET without raising: used for capability probes."""

@@ -60,7 +60,7 @@ class ConnectionService:
             existing = self.environments.find_by_url(url)
             host = Environment(name="x", base_url=url).base_url.split("//", 1)[1].split("/", 1)[0]
             fields = dict(base_url=url, auth_method=method, username=username or None, providers_enabled=providers,
-                          tls=TlsSettings(verify=verify_tls), kind=kind, local_repo_path=local_repo.strip() or None)
+                          tls=TlsSettings(verify=verify_tls, ca_bundle=existing.tls.ca_bundle if existing else None), kind=kind, local_repo_path=local_repo.strip() or None)
             env = existing.model_copy(update=fields) if existing else Environment(name=name or host, **fields)
             env = Environment.model_validate(env.model_dump())
         except (ValidationError, ValueError) as exc:

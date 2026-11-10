@@ -22,8 +22,18 @@ def project_location(ctx: InspectionContext, col: Collector) -> str | None:
         if isinstance(proj, dict):
             body = proj.get("getProjectReturn", proj)
             loc = first_text(body.get("location")) if isinstance(body, dict) else None
+    loc = context_location(loc)
     ctx.shared["project_location"] = loc or None
     return loc or None
+
+
+def context_location(raw: str | None) -> str | None:
+    """Project.location is the project's DESCRIPTOR FILE, e.g. 'default:/Vision/.polarion/polarion-project.xml' (verified on a real
+    Polarion 2606). Security.getContextRoles / getRolesForUser want the project FOLDER, 'default:/Vision': passing the file is
+    refused with 'Location is not a valid context'."""
+    if not raw:
+        return None
+    return raw.split("/.polarion/", 1)[0].rstrip("/") or None
 
 
 class RolesReader:

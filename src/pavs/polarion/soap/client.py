@@ -14,7 +14,7 @@ from typing import Any, Iterable
 from xml.sax.saxutils import escape
 
 from ...infra import safexml
-from ...domain.errors import AuthenticationFailed, PolarionApiError, SoapFault
+from ...domain.errors import AuthenticationFailed, PavsError, PolarionApiError, SoapFault
 from ..safety import WriteAuthorization
 from ..transport import HttpTransport
 
@@ -87,6 +87,7 @@ class SoapClient:
         self.base = base_url.rstrip("/") + "/ws/services"
         self.session_id: str | None = None
         self.logged_in_user: str | None = None
+        self._reauth = None                       # set by the connection manager: signs in again with the same credentials
 
     def endpoint(self, service: str) -> str:
         return f"{self.base}/{service}WebService"
@@ -124,9 +125,37 @@ class SoapClient:
                 f"<soapenv:Body><ns:{operation}>{body}</ns:{operation}></soapenv:Body>"
                 f"</soapenv:Envelope>")
 
+    def set_reauth(self, fn) -> None:
+        """`fn()` signs in again (token or password). Used when the server forgot the session (timeout)."""
+        self._reauth = fn
+
     def call(self, service: str, operation: str, params: dict[str, Any] | None = None, *,
              write_auth: WriteAuthorization | None = None, project_id: str | None = None) -> Any:
-        """Invoke an operation and return the parsed content of `<operation>Response`."""
+        """Invoke an operation and return the parsed content of `<operation>Response`.
+
+        A real Polarion answers a call on an expired session with the fault "Not authorized." (verified on 2606). When that
+        happens, and the server confirms the session is gone (`hasSubject` is false), the client signs in again and repeats the
+        call ONCE, for read operations only: a write is never repeated automatically."""
+        try:
+            return self._call_once(service, operation, params, write_auth=write_auth, project_id=project_id)
+        except SoapFault as exc:
+            if not self._can_recover(service, operation, exc):
+                raise
+        self._reauth()
+        return self._call_once(service, operation, params, write_auth=write_auth, project_id=project_id)
+
+    def _can_recover(self, service: str, operation: str, exc: SoapFault) -> bool:
+        if self._reauth is None or service == "Session" or "not authorized" not in exc.message.lower():
+            return False
+        if not is_read_operation(service, operation):
+            return False
+        try:
+            return _scalar(self._call_once("Session", "hasSubject", {})) != "true"     # False: a genuine permission denial
+        except PavsError:
+            return False
+
+    def _call_once(self, service: str, operation: str, params: dict[str, Any] | None = None, *,
+                   write_auth: WriteAuthorization | None = None, project_id: str | None = None) -> Any:
         envelope = self.build_envelope(service, operation, params or {})
         resp = self.transport.request(
             "POST", self.endpoint(service), provider="soap",

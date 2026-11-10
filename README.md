@@ -126,7 +126,7 @@ Add an environment with URL `http://127.0.0.1:8810/polarion`, authentication "Us
 
 ### Check everything on this machine
 
-`qa check` runs 46 end-to-end scenarios (all release profiles, GUI, CLI, executables, security, browser checks); see [docs/TESTING-GUIDE.md](docs/TESTING-GUIDE.md).
+`qa check` runs 47 end-to-end scenarios (all release profiles, GUI, CLI, executables, security, browser checks); see [docs/TESTING-GUIDE.md](docs/TESTING-GUIDE.md).
 
 ### Build the executables
 
