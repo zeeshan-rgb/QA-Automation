@@ -449,3 +449,15 @@ def test_role_test_page_shows_users_and_the_blockers_report(svc_ctx, qapp_rt):
     # without svn the page says why and falls back to 'already assigned'
     page._loaded(([UserInfo("user2", "user2")], ["r"], types, ["_default"], AssignCapability(False, "svn.exe was not found")))
     assert page.mode_have.isChecked() and not page.mode_auto.isEnabled() and "svn.exe" in page.cap_note.text()
+
+
+def test_service_connects_by_itself_with_saved_credentials_and_explains_when_it_cannot(svc_ctx):
+    ctx, env = svc_ctx
+    ctx.connections.disconnect_all()                                   # a new window: environment saved, no live sign-in
+    assert ctx.connections.session(env.id) is None
+    assert ctx.roletest._session(env.id).soap is not None              # signed in again with the saved credentials
+    ctx.connections.disconnect_all()
+    ctx.environments._session_creds.clear()
+    ctx.environments.vault.delete(env.credential_key)
+    with pytest.raises(ConfigurationError, match="Connect & Test"):
+        ctx.roletest._session(env.id)

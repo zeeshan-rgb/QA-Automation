@@ -87,9 +87,18 @@ class RoleTestService:
 
     # ------------------------------------------------------------------ what Polarion knows
     def _session(self, env_id: str):
+        """The live session. If this window is not connected yet, sign in with the saved credentials (blocking: worker thread)."""
         s = self.connections.session(env_id)
+        if s is None:
+            creds = self.connections.environments.credentials(env_id)
+            if creds is None or not (creds.password or creds.token):
+                raise ConfigurationError("This window is not connected to the environment, and no sign-in is saved for it. Open 'Connect & Test', "
+                                         "sign in as an administrator (username + password), then come back here.")
+            self.connections.connect(self.connections.environments.get(env_id))
+            s = self.connections.session(env_id)
         if s is None or s.soap is None:
-            raise ConfigurationError("Connect to the environment first (with a username and password or a token that SOAP accepts).")
+            raise ConfigurationError("The sign-in did not give SOAP access. The role test needs SOAP: connect with a username and password "
+                                     "(or a Personal Access Token that SOAP accepts) on 'Connect & Test'.")
         return s
 
     def users(self, env_id: str) -> list[UserInfo]:
