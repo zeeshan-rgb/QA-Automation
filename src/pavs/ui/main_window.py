@@ -17,6 +17,7 @@ from .pages.dashboard import DashboardPage
 from .pages.environments import EnvironmentsPage
 from .pages.inspector import InspectorPage
 from .pages.merge import MergePage
+from .pages.role_test import RoleTestPage
 
 
 def r_desc(role: AppRole) -> str:
@@ -44,8 +45,10 @@ class MainWindow(QMainWindow):
         self.compatibility = CompatibilityPage(ctx)
         self.inspector = InspectorPage(ctx)
         self.merge = MergePage(ctx)
+        self.role_test = RoleTestPage(ctx)
         pages: list[tuple[str, QWidget]] = [
             ("Connect & Test", self.connect_test),
+            ("Role Test", self.role_test),
             ("Dashboard", self.dashboard),
             ("Configuration Inspector", self.inspector),
             ("Merge & Templates", self.merge),
@@ -165,6 +168,7 @@ class MainWindow(QMainWindow):
         self.inspector.refresh()
         self.merge.refresh()
         self.connect_test.refresh()
+        self.role_test.refresh()
 
     def closeEvent(self, event) -> None:  # noqa: N802 - Qt naming
         self.ctx.close()

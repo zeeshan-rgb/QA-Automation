@@ -28,7 +28,7 @@ def test_main_window_pages(qapp, tmp_path, mock_server):
     env = ctx.environments.save(make_env(name="Mock 2606"), ADMIN_TOKEN)
     ctx.connections.connect(env)
     win = MainWindow(ctx)
-    assert win.nav.count() == 6
+    assert win.nav.count() == 7
     for row in range(win.nav.count()):
         win.nav.setCurrentRow(row)
         qapp.processEvents()

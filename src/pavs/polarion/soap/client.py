@@ -21,6 +21,7 @@ from ..transport import HttpTransport
 SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/"
 SESSION_NS = "http://ws.polarion.com/session"
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
+TYPES_NS = "http://ws.polarion.com/types"
 
 # Operations that only read. Anything else counts as a write and goes through the Write Guard.
 READ_OPERATION_PREFIXES = ("get", "query", "has", "can", "is", "find", "search", "count")
@@ -76,8 +77,10 @@ def _serialize(name: str, value: Any) -> str:
     if isinstance(value, (list, tuple)):
         return "".join(_serialize(name, v) for v in value)
     if isinstance(value, dict):
-        inner = "".join(_serialize(k, v) for k, v in value.items())
-        return f"<{name}>{inner}</{name}>"
+        # keys starting with "@" are XML attributes (for example "@uri" on an object reference); the others are child elements
+        attrs = "".join(f' {k[1:]}="{escape(str(v), {chr(34): "&quot;"})}"' for k, v in value.items() if k.startswith("@"))
+        inner = "".join(_serialize(k, v) for k, v in value.items() if not k.startswith("@"))
+        return f"<{name}{attrs}>{inner}</{name}>"
     return f"<{name}>{escape(str(value))}</{name}>"
 
 
@@ -95,6 +98,11 @@ class SoapClient:
     @staticmethod
     def namespace(service: str) -> str:
         return f"http://ws.polarion.com/{service}WebService-impl"
+
+    @staticmethod
+    def types_namespace(service: str) -> str:
+        """Namespace of the service's data types (the children of a Work Item, Module, Comment ... are qualified with it)."""
+        return f"http://ws.polarion.com/{service}WebService-types"
 
     # ------------------------------------------------------------------ discovery
     def wsdl_operations(self, service: str) -> set[str] | None:
@@ -120,10 +128,16 @@ class SoapClient:
             header = f'<s:sessionID xmlns:s="{SESSION_NS}">{escape(self.session_id)}</s:sessionID>'
         return (f'<?xml version="1.0" encoding="UTF-8"?>'
                 f'<soapenv:Envelope xmlns:soapenv="{SOAP_ENV}" xmlns:xsi="{XSI}" '
-                f'xmlns:ns="{self.namespace(service)}">'
+                f'xmlns:ns="{self.namespace(service)}" xmlns:t="{self.types_namespace(service)}" xmlns:ty="{TYPES_NS}">'
                 f"<soapenv:Header>{header}</soapenv:Header>"
                 f"<soapenv:Body><ns:{operation}>{body}</ns:{operation}></soapenv:Body>"
                 f"</soapenv:Envelope>")
+
+    def relogin(self) -> None:
+        """Sign in again with the stored credentials (raises PavsError when none are known)."""
+        if self._reauth is None:
+            raise PavsError("no re-login available")
+        self._reauth()
 
     def set_reauth(self, fn) -> None:
         """`fn()` signs in again (token or password). Used when the server forgot the session (timeout)."""

@@ -91,3 +91,11 @@ def test_element_to_python_handles_attrs_lists_nil():
     out = element_to_python(ET.fromstring(xml))
     assert out["p"] == [{"uri": "u1", "id": "a"}, {"uri": "u2", "id": "b"}]
     assert out["n"] is None
+
+
+def test_soap_serializer_writes_attributes_and_declares_type_namespaces():
+    from pavs.polarion.soap.client import _serialize
+    xml = _serialize("project", {"@uri": 'subterra:a"b&c', "t:id": "x"})
+    assert xml == '<project uri="subterra:a&quot;b&amp;c"><t:id>x</t:id></project>'   # "@" keys become attributes, escaped
+    assert _serialize("plain", {"k": "v"}) == "<plain><k>v</k></plain>"                  # dicts without "@" keys are unchanged
+    assert SoapClient.types_namespace("Tracker") == "http://ws.polarion.com/TrackerWebService-types"

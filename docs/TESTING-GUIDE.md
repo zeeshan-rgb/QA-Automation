@@ -107,6 +107,15 @@ $env:PYTHONPATH = "src;."
 4. Set environment type to **Production** (Environments page, Edit) and try the behavioural run again.
    - [ ] Expected: you must type the exact environment name; a wrong name refuses to run.
 
+### 3.2b Role Test (writes in a test project; real server only)
+
+1. Connect on *Connect & Test* with an administrator (username + password), set your application role to **Lead**, then open **Role Test**.
+2. Choose the environment and the TEST project and press *Load users and roles from Polarion*. Pick a user, tick one or more roles, enter that user's password.
+3. Optional: *Load expected permissions (Excel)...* and choose the sheet. Leave it empty to expect that everything works.
+4. Press *Run role test* and confirm. Expect the progress to go through: assigning the role, preparing test data, testing each Work Item type, documents, cleanup, restoring the roles.
+5. Read the **Blockers report** tab (and *All checks*). *Export report...* saves it as Excel/PDF/HTML/CSV.
+6. Check afterwards: the user has their original roles again (Polarion > Administration > User Management) and no Work Item or document titled `[PAVS-ROLE-...]` is left. If something is left, the banner on the page offers *Restore roles* / *Clean up test data*.
+
 ### 3.3 Dashboard
 - [ ] Expected: *Saved environments* 1, *Reachable* 1/1, and the totals (Requirements, Checks, Passed, Failed, Blocked, Coverage) match the **latest** run of each project (not the sum of every run).
 

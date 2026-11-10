@@ -76,6 +76,14 @@ MIGRATIONS: list[str] = [
     """
     CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
     """,
+    # 6: role tests: objects created in a test project (for guaranteed cleanup) and role assignments waiting to be restored
+    """
+    CREATE TABLE roletest_artifacts (id INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT NOT NULL, environment_id TEXT NOT NULL,
+        project_id TEXT NOT NULL, kind TEXT NOT NULL, uri TEXT NOT NULL, title TEXT NOT NULL, created_at TEXT NOT NULL, deleted_at TEXT);
+    CREATE INDEX ix_roletest_open ON roletest_artifacts(environment_id, project_id, deleted_at);
+    CREATE TABLE roletest_pending (run_id TEXT PRIMARY KEY, environment_id TEXT NOT NULL, project_id TEXT NOT NULL, data TEXT NOT NULL,
+        created_at TEXT NOT NULL);
+    """,
 ]
 
 
@@ -399,3 +407,45 @@ class AuditLog:
     def recent(self, limit: int = 200) -> list[dict]:
         rows = self.db.query("SELECT * FROM audit_log ORDER BY id DESC LIMIT ?", (limit,))
         return [dict(r) for r in rows]
+
+
+class RoleTestRepository:
+    """Objects a role test created (until deleted again) and role assignments that still have to be restored."""
+
+    def __init__(self, db: Database) -> None:
+        self.db = db
+
+    # ---- created objects
+    def add_artifact(self, run_id: str, env_id: str, project_id: str, kind: str, uri: str, title: str) -> None:
+        with self.db.tx() as c:
+            c.execute("INSERT INTO roletest_artifacts(run_id, environment_id, project_id, kind, uri, title, created_at) VALUES(?,?,?,?,?,?,?)",
+                      (run_id, env_id, project_id, kind, uri, title, _now()))
+
+    def open_artifacts(self, env_id: str, project_id: str, run_id: str | None = None) -> list[tuple[str, str, str, str]]:
+        """(run_id, kind, uri, title) of everything not yet deleted."""
+        sql, args = "SELECT run_id, kind, uri, title FROM roletest_artifacts WHERE environment_id=? AND project_id=? AND deleted_at IS NULL", [env_id, project_id]
+        if run_id:
+            sql, args = sql + " AND run_id=?", args + [run_id]
+        return [tuple(r) for r in self.db.query(sql + " ORDER BY id", tuple(args))]
+
+    def done_artifact(self, env_id: str, project_id: str, uri: str) -> None:
+        with self.db.tx() as c:
+            c.execute("UPDATE roletest_artifacts SET deleted_at=? WHERE environment_id=? AND project_id=? AND uri=? AND deleted_at IS NULL",
+                      (_now(), env_id, project_id, uri))
+
+    # ---- role assignments to restore
+    def set_pending(self, run_id: str, env_id: str, project_id: str, data: str) -> None:
+        with self.db.tx() as c:
+            c.execute("INSERT OR REPLACE INTO roletest_pending(run_id, environment_id, project_id, data, created_at) VALUES(?,?,?,?,?)",
+                      (run_id, env_id, project_id, data, _now()))
+
+    def pending(self, env_id: str | None = None) -> list[tuple[str, str, str, str]]:
+        """(run_id, environment_id, project_id, data)"""
+        sql, args = "SELECT run_id, environment_id, project_id, data FROM roletest_pending", ()
+        if env_id:
+            sql, args = sql + " WHERE environment_id=?", (env_id,)
+        return [tuple(r) for r in self.db.query(sql + " ORDER BY created_at", args)]
+
+    def clear_pending(self, run_id: str) -> None:
+        with self.db.tx() as c:
+            c.execute("DELETE FROM roletest_pending WHERE run_id=?", (run_id,))

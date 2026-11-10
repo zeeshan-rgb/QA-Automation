@@ -8,7 +8,7 @@ from pathlib import Path
 from .infra import paths
 from .infra.logging_setup import configure_logging
 from .infra.storage import (AuditLog, Database, EnvironmentRepository, ProfileRepository,
-                            ArtifactRepository, RequirementRepository, SnapshotRepository, TestRunRepository)
+                            ArtifactRepository, RequirementRepository, RoleTestRepository, SnapshotRepository, TestRunRepository)
 from .infra.vault import CredentialVault, VaultBackend
 from .polarion.capabilities import CapabilityRegistry
 from .polarion.connection import ConnectionManager
@@ -18,6 +18,7 @@ from .integrations.tortoisesvn import TortoiseLauncher
 from .services.inspection import InspectionService
 from .services.merge import MergeService
 from .services.roles import RoleService
+from .services.roletest import RoleTestService
 from .services.testing import TestingService
 
 
@@ -33,6 +34,7 @@ class AppContext:
     testing: TestingService
     roles: RoleService
     merge: MergeService
+    roletest: RoleTestService
 
     def close(self) -> None:
         self.connections.disconnect_all()
@@ -54,8 +56,9 @@ def build_context(db_path: Path | str | None = None, vault_backend: VaultBackend
     testing = TestingService(conns, inspection, RequirementRepository(db), TestRunRepository(db), audit, ArtifactRepository(db))
     roles = RoleService(db, audit)
     merge = MergeService(conns, TestRunRepository(db), audit, launcher)
-    envs.roles = testing.roles = merge.roles = roles
-    return AppContext(db, audit, vault, registry, envs, conns, inspection, testing, roles, merge)
+    roletest = RoleTestService(conns, TestRunRepository(db), audit, RoleTestRepository(db), http_transport=http_transport)
+    envs.roles = testing.roles = merge.roles = roletest.roles = roles
+    return AppContext(db, audit, vault, registry, envs, conns, inspection, testing, roles, merge, roletest)
 
 
 def _actor() -> str:

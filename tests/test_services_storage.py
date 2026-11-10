@@ -93,7 +93,7 @@ def test_existing_database_is_upgraded_in_place_without_losing_data(tmp_path):
     raw.close()
 
     db = Database(path)
-    assert db.schema_version == len(MIGRATIONS) == 5
+    assert db.schema_version == len(MIGRATIONS) == 6
     saved = EnvironmentRepository(db).get(env.id)
     assert saved.name == "Saved before the upgrade" and saved.test_accounts == {}
     assert db.query("SELECT COUNT(*) AS n FROM test_artifacts")[0]["n"] == 0

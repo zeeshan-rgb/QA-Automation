@@ -49,8 +49,19 @@ How it is kept safe (each rule is enforced in code and covered by tests):
 - *Clean up test data* removes leftovers from an earlier crashed run. The audit log records every approval, run and cleanup.
 - If a test account lacks REST endpoint permissions, the result is **BLOCKED**, never a false pass.
 
+## Role Test: assign a role to a user and see what blocks the work
+
+The **Role Test** page does what you would do by hand. Pick a Polarion user (the list comes from the server), tick the role(s) to give them in a TEST project, enter that user's password, and press *Run role test*:
+- The app gives the user the role (it changes only that user's entry in `<project>/.polarion/security/user-roles.xml` through a temporary Subversion working copy), waits until Polarion shows it, and signs in **as that user**.
+- It then really creates, edits (title and description), links, comments on, resolves comments on, approves, changes the status of and deletes test Work Items of every type, and creates, edits and deletes documents. Test runs and collections are asked of the server's own permission check.
+- Load the customer's Excel sheet (for example *P4 Proposed structure V2*) to say what each role must and must not be able to do; without a sheet, everything is expected to work.
+- The result is **PASSED**, or a **blockers report**: what the role cannot do, what is allowed although the sheet says No, and what could not be tried, with the cause (missing permission, no repository access for the user, a workflow or save-hook script that is missing, a required field) and what to fix. It is saved in the history and exports like any other run.
+- Afterwards every test object is deleted and the user's original roles are put back (a restore is also kept in the local database, so *Restore roles* works even after a crash). If you assigned the role in Polarion yourself, choose *The user already has the role(s)* and nothing is changed.
+
+This is the second place (after behavioural tests) that changes anything. It needs the Lead role, an approved test project, the Subversion command-line client for the automatic assignment (found with TortoiseSVN or Polarion; otherwise assign the role yourself), and the user's password, which is used in memory only.
+
 ## What the tool never does
-- Outside behavioural tests it never creates, changes or deletes anything in Polarion (asserted by the tests).
+- Outside behavioural tests and role tests it never creates, changes or deletes anything in Polarion (asserted by the tests).
 - It never uses AI. Test cases come from fixed rules; results come only from executed checks with evidence.
 - Passwords and tokens are never written to the database, logs or reports.
 
