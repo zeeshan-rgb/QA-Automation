@@ -82,7 +82,7 @@ class RoleTestReport:
                 continue
             out.append(title)
             for f in rows:
-                shown = f.detail if f.cause in (Cause.PERMISSION, Cause.NONE) else f.cause.value     # a cause listed above is not repeated in full
+                shown = f.detail if f.cause in (Cause.PERMISSION, Cause.NONE) else ""      # a cause listed above is not repeated here
                 out.append(f"  - {f.group} / {f.action}: {f.what}" + (f" ({shown})" if shown and kind != "unexpected" else ""))
             if kind == "blocker" and any(f.cause == Cause.PERMISSION for f in rows):
                 out.append(f"  Fix for the permission blockers: {ADVICE[Cause.PERMISSION]}")

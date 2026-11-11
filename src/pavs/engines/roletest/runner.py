@@ -202,8 +202,18 @@ class RoleTestRunner:
         finally:
             self.progress("Removing the test data", 92)
             self.cleanup()
+        self._explain_unreadable()
         self.progress("Done", 100)
         return self.probes
+
+    def _explain_unreadable(self) -> None:
+        """Without access to the project's repository nothing can be opened. When that was seen, an 'unreadable' READ is that, not a missing permission."""
+        if not any(p.cause == Cause.REPO_ACCESS for p in self.probes):
+            return
+        for p in self.probes:
+            if p.action == "READ" and p.outcome == Outcome.DENIED and "cannot be opened" in p.detail:
+                p.outcome, p.cause = Outcome.BLOCKED, Cause.REPO_ACCESS
+                p.detail = "the user has no access to the project's repository folder"
 
     # ------------------------------------------------------------------ Work Items
     def _prepare_type(self, t: TypeSpec) -> None:

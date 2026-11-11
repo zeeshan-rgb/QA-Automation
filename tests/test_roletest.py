@@ -461,3 +461,31 @@ def test_service_connects_by_itself_with_saved_credentials_and_explains_when_it_
     ctx.environments.vault.delete(env.credential_key)
     with pytest.raises(ConfigurationError, match="Connect & Test"):
         ctx.roletest._session(env.id)
+
+
+def test_a_missing_script_is_named_with_its_path():
+    msg = ("jakarta.transaction.RollbackException: Your action cannot be completed because the specified script was not found. "
+           "For more details, please contact your System Administrator. Script repository path: [phase4_sprint3_dev/6]")
+    o, c, d = classify(False, msg)
+    assert (o, c) == (Outcome.BLOCKED, Cause.WORKFLOW) and "'phase4_sprint3_dev/6'" in d
+
+
+def test_no_repository_access_is_one_cause_and_explains_the_unreadable_items():
+    sorry = "PersistenceException: DriverException: Sorry, you do not have access to the Subversion Repository. Please contact your administrator"
+    assert classify(False, sorry)[:2] == (Outcome.BLOCKED, Cause.REPO_ACCESS)
+    assert classify(False, "PermissionDeniedException: Repository read permission denied for ObjectId[context id X]")[:2] == (Outcome.BLOCKED, Cause.REPO_ACCESS)
+
+    class NoRepo(FakeActor):                                         # the user can write nothing and read nothing: the repository is closed to them
+        def try_call(self, service, op, params=None, write=False):
+            if op == "getWorkItemByUri":
+                return True, {"getWorkItemByUriReturn": {"uri": params["uri"], "unresolvable": "true"}}
+            if op == "createComment":
+                return False, sorry
+            return super().try_call(service, op, params, write)
+    server = FakeServer({"user2": {("systemrequirement", "CREATE NEW")}})
+    r = RoleTestRunner(FakeActor(server, "admin"), NoRepo(server, "user2"), RunSetup("P", "user2", "[PAVS-ROLE-t1]", TYPES[:1]), MemoryLedger())
+    probes = r.run()
+    read = by(probes, "SYSTEM REQUIREMENT", "READ")
+    assert (read.outcome, read.cause) == (Outcome.BLOCKED, Cause.REPO_ACCESS)
+    rep = build_report("user2", ["x"], "P", probes, TYPES[:1], None)
+    assert rep.root_causes()[0][0][0] == Cause.REPO_ACCESS
